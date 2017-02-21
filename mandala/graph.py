@@ -18,9 +18,14 @@ def sync_graph(func):
             if 'graph' in kwargs.keys():
                 del kwargs['graph']
 
-            return func(graph, *args[1:], **kwargs)
+            result = func(graph, *args[1:], **kwargs)
         else:
             raise IOError("Graph file not found!")
+
+        with open(graph_path, 'w') as f:
+            graph.write_pickle(f)
+
+        return result
 
     return with_loaded_graph
 
@@ -34,10 +39,18 @@ class DataNode(object):
         backend = get_backend(which='storage')(BACKEND_PATH)
         return backend.load(self._id)
 
+    def eeeeeeval(self):
+        try:
+            return self.eval()
+        except IOError: # TODO: code and use custom BackendError
+            pass
+            # load graph
+            # get vertex for self._id
+            # get all predeccessors
 
 def initialize_graph(path):
     if not os.path.exists(path):
-        graph = Graph()
+        graph = Graph(directed=True)
         graph.vs['name'] = []
         graph.vs['func_name'] = []
         graph.vs['func_path'] = []
@@ -54,7 +67,7 @@ def add_node(graph, input_nodes_ids, func_name, func_path, output_index=0):
 
     ### check if output node exists
     # get succesors of input nodes
-    successors = [graph.vs.find(name=node).successors() for node in input_nodes_ids]
+    successors = [graph.vs.find(name=node._id).successors() for node in input_nodes_ids]
     # intersect succesors
     candidate_nodes = reduce(lambda x, y: set(x).intersection(set(y)), successors, set(graph.vs['name']))
 
@@ -79,27 +92,30 @@ def add_node(graph, input_nodes_ids, func_name, func_path, output_index=0):
 
     # connect that node to input nodes
     for parent_id in input_nodes_ids:
-        graph.add_edge(parent_id, node_id)
+        graph.add_edge(parent_id._id, node_id)
 
     return DataNode(node_id)
 
 @sync_graph
 def find_nodes(graph, input_nodes_ids, func_name, func_path):
     # get succesors of input nodes
-    try:
-        successors = [graph.vs.find(name=node._id).successors() for node in input_nodes_ids]
-    except:
-        import pdb; pdb.set_trace()
+    successors = [[v["name"] for v in graph.vs.find(name=node._id).successors()] for node in input_nodes_ids]
     # intersect succesors
-    candidate_nodes = reduce(lambda x, y: set(x).intersection(set(y)), successors, set(graph.vs['name']))
-
+    candidate_nodes = reduce(lambda x, y: set(x).intersection(set(y)), successors, set(graph.vs["name"]))
+#    if len(input_nodes_ids) > 0:
+#        import pdb; pdb.set_trace()
     # filter over arguments
-    arg_filter = lambda x: graph.vs['func_name'] == func_name and \
-                           graph.vs['func_path'] == func_path
+    arg_filter = lambda x: graph.vs.find(name=x)['func_name'] == func_name and \
+                           graph.vs.find(name=x)['func_path'] == func_path
     candidate_nodes = filter(arg_filter, candidate_nodes)
+#    if len(input_nodes_ids) > 0:
+#        import pdb; pdb.set_trace()
     # filter over predecessors number
     pred_filter = lambda x: len(graph.vs.find(name=x).predecessors()) == len(input_nodes_ids)
     candidate_nodes = filter(pred_filter, candidate_nodes)
+#    if len(input_nodes_ids) > 0:
+#        import pdb; pdb.set_trace()
+
     # check for graph corruption
     output_ids = [graph.vs.find(name=node_id)['output_index'] for node_id in candidate_nodes]
 
@@ -107,6 +123,8 @@ def find_nodes(graph, input_nodes_ids, func_name, func_path):
     if not [t[0] for t in tuples] == range(len(tuples)):
         raise ValueError("Corrupted graph! Lost some output node!")
 
+#    if len(input_nodes_ids) > 0:
+#        import pdb; pdb.set_trace()
     return tuple([DataNode(t[1]) for t in tuples])
 
 
