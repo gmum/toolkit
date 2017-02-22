@@ -1,0 +1,14 @@
+# python
+*.pyc
+
+# ipynb
+notebooks/.ipynb_checkpoints
+
+# pycharm
+.idea
+
+# mandala
+.backends
+.graphs
+.mandala_cache
+*.pkl

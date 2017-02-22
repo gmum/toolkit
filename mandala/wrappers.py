@@ -28,8 +28,10 @@ def wrap(function):
                                   func_name=func_name,
                                   func_path=func_path)
 
+        # node(s) already exists, return them
         if len(output_nodes) > 0:
             return tuple(output_nodes) if len(output_nodes) > 1 else output_nodes[0]
+        # node(s) does not exist, create
         else:
             values = [backend.load(node) for node in new_args]
 
@@ -45,7 +47,6 @@ def wrap(function):
             else:
                 node = graph.add_node(new_args, func_name, func_path, output_index=0)
                 backend.save(ret, node)
-                print node
                 return node
 
     return wrapped

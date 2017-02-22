@@ -36,6 +36,6 @@ class PickleBackend(object):
 # set main graph
 backend = None
 if CONFIG['storage_backend'] == 'pickle':
-    graph_backend = PickleBackend(STORAGE_PATH)
+    backend = PickleBackend(STORAGE_PATH)
 else:
     raise ValueError("Wrong SORAGE backend: {}".format(CONFIG['storage_backend']))
