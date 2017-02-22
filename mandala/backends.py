@@ -1,3 +1,5 @@
+
+from abc import ABCMeta, abstractmethod
 import os
 import cPickle
 from igraph import Graph
@@ -11,26 +13,30 @@ class PickleBackend(object):
     def __init__(self, root_dir):
         self.root_dir = root_dir
 
-    def save(self, object, node):
-        with open(os.path.join(self.root_dir, node._id + '.pkl'), 'w') as f:
+    def _get_path(self, node_id):
+        return os.path.join(self.root_dir, node_id + '.pkl')
+
+    def save(self, object, node_id):
+
+        node_path =  self._get_path
+        with open(os.path.join(self.root_dir, node_id + '.pkl'), 'w') as f:
             cPickle.dump(object, f)
 
-    def load(self, node):
-        node_path = os.path.join(self.root_dir, node._id + '.pkl')
+    def load(self, node_id):
+        node_path = os.path.join(self.root_dir, node_id + '.pkl')
         if os.path.exists(node_path):
             with open(node_path, 'r') as f:
                 object = cPickle.load(f)
             return object
         else:
-            with open(GRAPH_PATH, 'r') as f:
-                graph = Graph.Read_Pickle(f)
+            # TODO: throw custom backend error
+            raise IOError("Backend file not found")
 
-            v = graph.vs.find(name=node._id)
-            assert v['func_name'] == '_load_internal_cache'
-            assert v['func_path'] == 'mandala.internal_cache'
-            output_index = v['output_index']
-            cache = _load_internal_cache()
-            return cache[output_index]
+    def get_abs_path(self, node_id):
+        return os.path.join(self.root_dir, node_id + '.pkl')
+
+    def exists(self, node_id):
+        return os.path.exists(self._get_path(node_id))
 
 
 # set main graph

@@ -5,51 +5,96 @@ from backends import backend
 import inspect
 
 
-def wrap(function):
+def wrap(function): # TODO: add default mandala meat params
+
+    def run_function(node_kwargs):
+        # eval kwargs
+        args = {key: node.eval() for key, node in node_kwargs}
+        returned = function(**args)
+
+        if not isinstance(returned, tuple):
+            returned = [returned]
+        return returned
+
+    def _check_storage(nodes):
+        return all([backend.exists(node._id) for node in nodes])
+
+    def _check_cache(nodes):
+        return all([node.exists_cache() for node in nodes])
+
 
     def wrapped(*args, **kwargs):
 
-        new_args = []
-        # TODO: remember about kwargs
-        for arg in args:
-            if isinstance(arg, DataNode):
-                new_args.append(arg)
-            else:
-                print "debug type:", arg
-                output_index = cached_value_to_index(arg)
-                new_args.append(graph.add_basic_type_node(output_index=output_index))
-
+        # get function info
         members_dict = dict(inspect.getmembers(function))
         func_name = members_dict['__name__']
         func_path = members_dict['__module__']
 
-        output_nodes = graph.find_nodes(
-                                  input_nodes_ids=new_args,
-                                  func_name=func_name,
-                                  func_path=func_path)
+        # get arguments info
+        argspecs = inspect.getargspec(function)
+        arg_names = argspecs.args
 
-        # node(s) already exists, return them
-        if len(output_nodes) > 0:
-            return tuple(output_nodes) if len(output_nodes) > 1 else output_nodes[0]
-        # node(s) does not exist, create
-        else:
-            values = [backend.load(node) for node in new_args]
+        # TODO: get mandala meta params
 
-            ret = function(*values)
+        # add args to kwargs
+        for key, arg in zip(arg_names[:len(args)], args):
+            assert key not in kwargs
+            kwargs[key] = arg # FIXME: do not modify kwargs?
 
-            if isinstance(ret, tuple):
-                results = []
-                for i in xrange(len(ret)):
-                    node = graph.add_node(new_args, func_name, func_path, output_index=i)
-                    backend.save(ret[i], node)
-                    results.append(node)
-                return tuple(results)
+        # process arguments into nodes
+        new_kwargs = {}
+        for key, arg in new_kwargs.iteritems():
+            if isinstance(arg, DataNode):
+                new_kwargs[key] = arg
             else:
-                node = graph.add_node(new_args, func_name, func_path, output_index=0)
-                backend.save(ret, node)
-                return node
+                output_index = cached_value_to_index(arg)
+                new_kwargs['key'] = graph.add_basic_type_node(output_index=output_index)
+
+        # find nodes
+        output_nodes = graph.find_output_nodes(input_nodes_ids=new_kwargs,
+                                               func_name=func_name,
+                                               func_path=func_path)
+
+        # no nodes found
+        if output_nodes is None:
+            returned = run_function(new_kwargs)
+            # create nodes
+            output_nodes = []
+            for i in xrange(len(returned)):
+                node = graph.add_node(new_kwargs, func_name, func_path, output_index=i)
+                output_nodes.append(node)
+        # nodes found
+        else:
+            assert len(output_nodes) > 0
+            storage_exists = _check_storage(output_nodes)
+            cache_exists = _check_cache(output_nodes)
+
+            if cache_exists:
+                returned = [node._get_from_cache() for node in output_nodes]
+            elif storage_exists:
+                returned = [backend.load(node._id) for node in output_nodes]
+            else:
+                returned = run_function(new_kwargs)
+
+        assert output_nodes is not None
+        assert len(output_nodes) > 0
+        assert len(returned) > 0
+
+        # TODO: check mandala meta params for what to do with results
+
+        # TODO: save returned where mandala meta params says to save
+
+        if len(output_nodes) > 1:
+            return tuple(output_nodes)
+        else:
+            return output_nodes[0]
+
 
     return wrapped
+
+
+
+
 
 
 
