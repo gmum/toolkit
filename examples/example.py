@@ -5,10 +5,12 @@ sys.path.append('/home/sieradzki/toolkit')
 
 import numpy as np
 import mandala as md
-from mandala.wrappers import wrap
 
 md.set_storage_backend('pickle')
-md.graph.initialize_graph(md.GRAPH_PATH)
+md.set_graph_backend('iGraph')
+
+from mandala.wrappers import wrap
+
 
 @wrap
 def get_X():
@@ -31,5 +33,5 @@ node1 = get_X()
 node2 = get_Y()
 node3 = dummy(node1, node2)
 
-node4 = get_row(node1, 3)
-node5 = get_row(node1, 5)
+# node4 = get_row(node1, 3)
+# node5 = get_row(node1, 5)

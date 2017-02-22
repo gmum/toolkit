@@ -1,15 +1,9 @@
 import os
 import cPickle
-
-REPOSITORY_DIR = os.path.join(os.path.dirname(__file__), "..")
-GRAPH_PATH = os.path.join(REPOSITORY_DIR, 'graph.pkl')
-
 from igraph import Graph
-from mandala.internal_cache import  _load_internal_cache
-from mandala import get_backend as _get_backend
 
-def get_backend():
-    return {"pickle": PickleBackend}[_get_backend()]
+from mandala.internal_cache import  _load_internal_cache
+from mandala import CONFIG, GRAPH_PATH, STORAGE_PATH
 
 
 class PickleBackend(object):
@@ -38,3 +32,10 @@ class PickleBackend(object):
             cache = _load_internal_cache()
             return cache[output_index]
 
+
+# set main graph
+backend = None
+if CONFIG['storage_backend'] == 'pickle':
+    graph_backend = PickleBackend(STORAGE_PATH)
+else:
+    raise ValueError("Wrong SORAGE backend: {}".format(CONFIG['storage_backend']))
