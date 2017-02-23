@@ -5,92 +5,127 @@ from backends import backend
 import inspect
 
 
-def wrap(function): # TODO: add default mandala meat params
+class mandala(object):
 
-    def run_function(node_kwargs):
+    def __init__(self, store=True, cache=False):
+
+        self.save_storage = store
+        self.save_cache = cache
+        self.function = None
+
+    def run_function(self, node_kwargs):
         # eval kwargs
         args = {key: node.eval() for key, node in node_kwargs}
-        returned = function(**args)
+        returned = self.function(**args)
 
         if not isinstance(returned, tuple):
             returned = [returned]
         return returned
 
-    def _check_storage(nodes):
+    def _check_storage(self, nodes):
         return all([backend.exists(node._id) for node in nodes])
 
-    def _check_cache(nodes):
+    def _check_cache(self, nodes):
         return all([node.exists_cache() for node in nodes])
 
+    def _save_results(self, where, results):
+        if where == 'storage':
+            for node_id, ret in results.iteritems():
+                backend.save(ret, node_id)
+        elif where == 'cache':
+            for node_id, ret in results.iteritems():
+                DataNode(node_id).cache_data(ret) # FIXME: ugly? bad?
 
-    def wrapped(*args, **kwargs):
 
-        # get function info
-        members_dict = dict(inspect.getmembers(function))
-        func_name = members_dict['__name__']
-        func_path = members_dict['__module__']
+    def __call__(self, function):
 
-        # get arguments info
-        argspecs = inspect.getargspec(function)
-        arg_names = argspecs.args
+        self.function = function
 
-        # TODO: get mandala meta params
+        def wrapped(*args, **kwargs):
 
-        # add args to kwargs
-        for key, arg in zip(arg_names[:len(args)], args):
-            assert key not in kwargs
-            kwargs[key] = arg # FIXME: do not modify kwargs?
+            # get function info
+            members_dict = dict(inspect.getmembers(function))
+            func_name = members_dict['__name__']
+            func_path = members_dict['__module__']
 
-        # process arguments into nodes
-        new_kwargs = {}
-        for key, arg in new_kwargs.iteritems():
-            if isinstance(arg, DataNode):
-                new_kwargs[key] = arg
+            # get arguments info
+            argspecs = inspect.getargspec(function)
+            arg_names = argspecs.args
+
+            # get mandala meta params
+            if 'meta_mandala' in kwargs.keys():
+                meta_params = kwargs['meta_mandala']
+
+                self.save_storage = meta_params.get('store', self.save_storage)
+                self.save_cache = meta_params.get('cache', self.save_cache)
+
+            # add args to kwargs
+            for key, arg in zip(arg_names[:len(args)], args):
+                assert key not in kwargs
+                kwargs[key] = arg # FIXME: do not modify kwargs?
+
+            # process arguments into nodes
+            new_kwargs = {}
+            for key, arg in new_kwargs.iteritems():
+                if isinstance(arg, DataNode):
+                    new_kwargs[key] = arg
+                else:
+                    output_index = cached_value_to_index(arg)
+                    new_kwargs['key'] = graph.add_basic_type_node(output_index=output_index)
+
+            # find nodes
+            output_nodes = graph.find_output_nodes(input_nodes_ids=new_kwargs,
+                                                   func_name=func_name,
+                                                   func_path=func_path)
+
+            results = {}
+            # no nodes found
+            if output_nodes is None:
+                returned = self.run_function(new_kwargs)
+                # create nodes
+                for i in xrange(len(returned)):
+                    node = graph.add_node(new_kwargs, func_name, func_path, output_index=i)
+                    results[node._id] = returned[i]
+            # nodes found
             else:
-                output_index = cached_value_to_index(arg)
-                new_kwargs['key'] = graph.add_basic_type_node(output_index=output_index)
+                assert len(output_nodes) > 0
+                # check if results are stored somewhere
+                storage_exists = self._check_storage(output_nodes)
+                cache_exists = self._check_cache(output_nodes)
 
-        # find nodes
-        output_nodes = graph.find_output_nodes(input_nodes_ids=new_kwargs,
-                                               func_name=func_name,
-                                               func_path=func_path)
+                # results not in storage and should be
+                if not storage_exists and self.save_storage:
+                    # check if results are in cache
+                    if cache_exists: # results are in cache
+                        results = {node._id: node._get_from_cache() for node in output_nodes}
+                    # there are no saved results, calculate them
+                    else:
+                        returned = self.run_function(new_kwargs)
+                        results = {node._id: ret for node, ret in zip(output_nodes, returned)}
+                # results are not in cache and should be
+                elif not cache_exists and self.save_cache:
+                    # check if results are in storage
+                    if storage_exists:
+                        results = {node._id: backend.load(node._id) for node in output_nodes}
+                    # there are no saved results, calculate them
+                    else:
+                        returned = self.run_function(new_kwargs)
+                        results = {node._id: ret for node, ret in zip(output_nodes, returned)}
 
-        # no nodes found
-        if output_nodes is None:
-            returned = run_function(new_kwargs)
-            # create nodes
-            output_nodes = []
-            for i in xrange(len(returned)):
-                node = graph.add_node(new_kwargs, func_name, func_path, output_index=i)
-                output_nodes.append(node)
-        # nodes found
-        else:
-            assert len(output_nodes) > 0
-            storage_exists = _check_storage(output_nodes)
-            cache_exists = _check_cache(output_nodes)
+            # save results as requested by mandala meta
+            if self.save_storage:
+                assert len(results) > 0
+                self._save_results(where='storage', results=results)
+            if self.save_cache:
+                assert len(results) > 0
+                self._save_results(where='cache', results=results)
 
-            if cache_exists:
-                returned = [node._get_from_cache() for node in output_nodes]
-            elif storage_exists:
-                returned = [backend.load(node._id) for node in output_nodes]
+            if len(output_nodes) > 1:
+                return tuple(output_nodes)
             else:
-                returned = run_function(new_kwargs)
+                return output_nodes[0]
 
-        assert output_nodes is not None
-        assert len(output_nodes) > 0
-        assert len(returned) > 0
-
-        # TODO: check mandala meta params for what to do with results
-
-        # TODO: save returned where mandala meta params says to save
-
-        if len(output_nodes) > 1:
-            return tuple(output_nodes)
-        else:
-            return output_nodes[0]
-
-
-    return wrapped
+        return wrapped
 
 
 
