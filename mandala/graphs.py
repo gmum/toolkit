@@ -1,5 +1,5 @@
 from abc import ABCMeta, abstractmethod
-from igraph import Graph
+import igraph
 import os
 from collections import defaultdict
 
@@ -56,9 +56,7 @@ class DataNode(object):
         exec ('from {} import {}'.format(func_path, func_name))
         function = eval(func_name)
 
-        # TODO: get parent nodes from graph
-        node_kwargs = # get parent nodes
-        # TODO: run it
+        node_kwargs = graph.get_parnets_kwargs(self._id)
         ret = function(**node_kwargs)
 
         return ret
@@ -117,12 +115,19 @@ class BaseGraph(object):
     def _get_node_func_info(self, node_id):
         raise NotImplementedError()
 
+    def get_parnets_kwargs(self, node_id):
+        self.load()
+        return self._get_parnets_kwargs(node_id)
+
+    @abstractmethod
+    def _get_parnets_kwargs(self, node_id):
+        raise NotImplementedError()
 
 class iGraphGraph(BaseGraph):
 
     def initialize(self):
         if not os.path.exists(self.path):
-            graph = Graph(directed=True)
+            graph = igraph.Graph(directed=True)
             graph.vs['name'] = []
             graph.vs['func_name'] = []
             graph.vs['func_path'] = []
@@ -137,7 +142,7 @@ class iGraphGraph(BaseGraph):
 
     def load(self):
         with open(self.path, 'r') as f:
-            self.graph = Graph.Read_Pickle(f)
+            self.graph = igraph.Graph.Read_Pickle(f)
 
     def _find_output_nodes(self, input_nodes_dict, func_name, func_path):
         # get succesors of input nodes
@@ -204,6 +209,23 @@ class iGraphGraph(BaseGraph):
     def _get_node_func_info(self, node_id):
         node = self._find_node(node_id)
         return node['func_name'], node['func_path'], node['output_index']
+
+    def _get_node_parents(self, node_id):
+
+        node = self._find_node(node_id)
+        return node.predecessors()
+
+    def _get_parnets_kwargs(self, node_id):
+        output_node = self.graph.vs.find(name=node_id)
+        parents = self._get_node_parents(node_id)
+
+        parent_kwargs = {}
+        for parent in parents:
+            edge = self.graph.es.find(_source=parent.index, _target=output_node.index)
+            assert isinstance(edge, igraph.Edge)
+            parent_kwargs[edge['name']] = parent
+
+        return parent_kwargs
 
 
 
