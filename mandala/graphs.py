@@ -3,10 +3,15 @@ import igraph
 import os
 from collections import defaultdict
 
-from mandala import GRAPH_PATH, CONFIG
-from backends import backend
+from . import GRAPH_PATH, CONFIG
+from .backends import backend
 
 import pdb
+
+# TODO: create abstraction under DataNode, BaseNone or sth
+# TODO: create new BasicTypeNode for "magic" nodes
+#   has different eval - loads valuie from internal cache
+#   has class method for finding nodes in graph by value
 
 
 class DataNode(object):
@@ -16,6 +21,11 @@ class DataNode(object):
 
     def __init__(self, _id):
         self._id = _id
+        self.__class__._increment_reference(_id)
+
+
+    def __del__(self):
+        self._decrement_reference(self._id)
 
     @classmethod
     def _increment_reference(cls, _id):
@@ -57,13 +67,16 @@ class DataNode(object):
         function = eval(func_name)
 
         node_kwargs = graph.get_parnets_kwargs(self._id)
+        node_kwargs['meta_mandala'] = {'store': False, 'cache': True}
         ret = function(**node_kwargs)
 
-        return ret
+        return self.eval()
 
 
 class BaseGraph(object):
     __metaclass__ = ABCMeta
+
+    # FIXME: change _methods to decorated methods for self.load() and self.save()
 
     def __init__(self, path):
         self.path = path
@@ -84,7 +97,7 @@ class BaseGraph(object):
         raise NotImplementedError()
 
     @abstractmethod
-    def _find_output_nodes(self, input_nodes_ids, func_name, func_path):
+    def _find_output_nodes(self, input_nodes_dict, func_name, func_path):
         raise NotImplementedError()
 
     def find_output_nodes(self, **kwargs):
@@ -92,7 +105,7 @@ class BaseGraph(object):
         return self._find_output_nodes(**kwargs)
 
     @abstractmethod
-    def _add_node(self, input_nodes_ids, func_name, func_path, output_index=0):
+    def _add_node(self, input_nodes_dict, func_name, func_path, output_index=0):
         raise NotImplementedError()
 
     def add_node(self, *args, **kwargs):
@@ -102,7 +115,7 @@ class BaseGraph(object):
         return node
 
     def add_basic_type_node(self, output_index):
-        return self.add_node(input_nodes_ids=[],
+        return self.add_node(input_nodes_dict={},
                              func_name='_load_internal_cache',
                              func_path='mandala.internal_cache',
                              output_index=output_index)
@@ -145,8 +158,19 @@ class iGraphGraph(BaseGraph):
             self.graph = igraph.Graph.Read_Pickle(f)
 
     def _find_output_nodes(self, input_nodes_dict, func_name, func_path):
-        # get succesors of input nodes
-        successors = [[v["name"] for v in self.graph.vs.find(name=node._id).successors()] for node in input_nodes_dict.values()]
+        # get succesors of input nodes filtered by edge name
+        successors = []
+        for arg_name, node in input_nodes_dict.iteritems():
+            input_node = self._find_node(node._id)
+            node_succs = []
+            for node_succ in self.graph.vs.find(name=node._id).successors():
+                edges = self.graph.es.select(_source=input_node.index, _target=node_succ.index, name=arg_name)
+                filtered_succs = [self.graph.vs.find(edge.target)['name'] for edge in edges]
+                node_succs += filtered_succs
+            successors.append(node_succs)
+
+        # pdb.set_trace()
+
         # intersect succesors
         candidate_nodes = reduce(lambda x, y: set(x).intersection(set(y)), successors, set(self.graph.vs["name"]))
         # filter over arguments
@@ -173,19 +197,28 @@ class iGraphGraph(BaseGraph):
         assert isinstance(input_nodes_dict, dict)
 
         ### check if output node exists
-        # get succesors of input nodes
-        successors = [self.graph.vs.find(name=node._id).successors() for node in input_nodes_dict.values()]
+        # get succesors of input nodes filtered by edge name
+        successors = []
+        for arg_name, node in input_nodes_dict.iteritems():
+            input_node = self._find_node(node._id)
+            for node_succ in self.graph.vs.find(name=node._id).successors():
+                edges = self.graph.es.select(_source=input_node.index, _target=node_succ.index, name=arg_name)
+                filtered_succs = [self.graph.vs.find(edge.target)['name'] for edge in edges]
+                successors.append(filtered_succs)
+
         # intersect succesors
         candidate_nodes = reduce(lambda x, y: set(x).intersection(set(y)), successors, set(self.graph.vs['name']))
 
         # filter over arguments
-        arg_filter = lambda x: self.graph.vs['func_name'] == func_name and \
-                               self.graph.vs['func_path'] == func_path and \
-                               self.graph.vs['output_index'] == output_index
+        arg_filter = lambda x: self.graph.vs.find(name=x)['func_name'] == func_name and \
+                               self.graph.vs.find(name=x)['func_path'] == func_path and \
+                               self.graph.vs.find(name=x)['output_index'] == output_index
         candidate_nodes = filter(arg_filter, candidate_nodes)
+
         # filter over predecessors number
         pred_filter = lambda x: len(self.graph.vs.find(name=x).predecessors()) == len(input_nodes_dict)
         candidate_nodes = filter(pred_filter, candidate_nodes)
+
         # check for graph corruption
         if len(candidate_nodes) > 1:
             raise ValueError("Corrupted graph! Found more than 1 existing candidate for a node!")
@@ -223,7 +256,7 @@ class iGraphGraph(BaseGraph):
         for parent in parents:
             edge = self.graph.es.find(_source=parent.index, _target=output_node.index)
             assert isinstance(edge, igraph.Edge)
-            parent_kwargs[edge['name']] = parent
+            parent_kwargs[edge['name']] = DataNode(parent['name'])
 
         return parent_kwargs
 

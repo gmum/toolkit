@@ -1,8 +1,10 @@
 
-from graphs import graph, DataNode
-from mandala.internal_cache import cached_value_to_index
-from backends import backend
+from .graphs import graph, DataNode
+from .internal_cache import cached_value_to_index
+from .backends import backend
 import inspect
+
+import pdb
 
 
 class mandala(object):
@@ -15,7 +17,7 @@ class mandala(object):
 
     def run_function(self, node_kwargs):
         # eval kwargs
-        args = {key: node.eval() for key, node in node_kwargs}
+        args = {key: node.eval() for key, node in node_kwargs.iteritems()}
         returned = self.function(**args)
 
         if not isinstance(returned, tuple):
@@ -29,6 +31,7 @@ class mandala(object):
         return all([node.exists_cache() for node in nodes])
 
     def _save_results(self, where, results):
+        assert len(results) > 0
         if where == 'storage':
             for node_id, ret in results.iteritems():
                 backend.save(ret, node_id)
@@ -66,15 +69,15 @@ class mandala(object):
 
             # process arguments into nodes
             new_kwargs = {}
-            for key, arg in new_kwargs.iteritems():
+            for key, arg in kwargs.iteritems():
                 if isinstance(arg, DataNode):
                     new_kwargs[key] = arg
                 else:
                     output_index = cached_value_to_index(arg)
-                    new_kwargs['key'] = graph.add_basic_type_node(output_index=output_index)
+                    new_kwargs[key] = graph.add_basic_type_node(output_index=output_index)
 
             # find nodes
-            output_nodes = graph.find_output_nodes(input_nodes_ids=new_kwargs,
+            output_nodes = graph.find_output_nodes(input_nodes_dict=new_kwargs,
                                                    func_name=func_name,
                                                    func_path=func_path)
 
@@ -83,9 +86,17 @@ class mandala(object):
             if output_nodes is None:
                 returned = self.run_function(new_kwargs)
                 # create nodes
+                output_nodes = []
                 for i in xrange(len(returned)):
                     node = graph.add_node(new_kwargs, func_name, func_path, output_index=i)
+                    output_nodes.append(node)
                     results[node._id] = returned[i]
+
+                # save results as requested by mandala meta
+                if self.save_storage:
+                    self._save_results(where='storage', results=results)
+                if self.save_cache:
+                    self._save_results(where='cache', results=results)
             # nodes found
             else:
                 assert len(output_nodes) > 0
@@ -102,6 +113,8 @@ class mandala(object):
                     else:
                         returned = self.run_function(new_kwargs)
                         results = {node._id: ret for node, ret in zip(output_nodes, returned)}
+                    # save to storge
+                    self._save_results(where='storage', results=results)
                 # results are not in cache and should be
                 elif not cache_exists and self.save_cache:
                     # check if results are in storage
@@ -111,14 +124,8 @@ class mandala(object):
                     else:
                         returned = self.run_function(new_kwargs)
                         results = {node._id: ret for node, ret in zip(output_nodes, returned)}
-
-            # save results as requested by mandala meta
-            if self.save_storage:
-                assert len(results) > 0
-                self._save_results(where='storage', results=results)
-            if self.save_cache:
-                assert len(results) > 0
-                self._save_results(where='cache', results=results)
+                    # save to cache0
+                    self._save_results(where='cache', results=results)
 
             if len(output_nodes) > 1:
                 return tuple(output_nodes)
