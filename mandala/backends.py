@@ -2,11 +2,12 @@
 from abc import ABCMeta, abstractmethod
 import os
 import cPickle
-from igraph import Graph
 
-from mandala.internal_cache import  _load_internal_cache
-from mandala import CONFIG, GRAPH_PATH, STORAGE_PATH
 
+from . import CONFIG, STORAGE_PATH
+
+# TODO: create abstraction BaseBacked wtih save, load, exists, search_by_value (only for "magic" nodes?)
+# TODO: create JSONBackend
 
 class PickleBackend(object):
 
@@ -17,8 +18,7 @@ class PickleBackend(object):
         return os.path.join(self.root_dir, node_id + '.pkl')
 
     def save(self, object, node_id):
-
-        node_path =  self._get_path
+        # TODO: check if already exists and throw error if it does
         with open(os.path.join(self.root_dir, node_id + '.pkl'), 'w') as f:
             cPickle.dump(object, f)
 
@@ -39,7 +39,7 @@ class PickleBackend(object):
         return os.path.exists(self._get_path(node_id))
 
 
-# set main graph
+# set main storage
 backend = None
 if CONFIG['storage_backend'] == 'pickle':
     backend = PickleBackend(STORAGE_PATH)

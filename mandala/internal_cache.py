@@ -1,11 +1,11 @@
 import os
 import json
 
-from mandala import MANDALA_CACHE
+from . import MANDALA_CACHE
+from .wrappers import mandala
 
-# TODO: change internal cache to single file!
-# TODO: use sth else than json?
 
+# TODO: remove all this and move to JSONBackend in .backends
 
 def cached_value_to_index(value):
     cache = _load_internal_cache()
@@ -16,6 +16,7 @@ def cached_value_to_index(value):
 
     return output_index
 
+@mandala(store=False, cache=False)
 def _load_internal_cache():
     cache = []
     for i in xrange(len(os.listdir(MANDALA_CACHE))):
