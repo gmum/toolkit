@@ -1,13 +1,15 @@
-
 # toolkit
 
-## Things to remember:
+* burrito
 
-Mandala internal cache must be under verson control!
+* job_pool
 
-## mandala
+* visdom_plotter
 
-<center>
-<img width=400 src="http://mymodernmet.com/wp/wp-content/uploads/archive/I9Se7hbe3l9YQicyNCzq_1065303976.jpeg">
-</center>
->>>>>>> 37c486c30c884670e8c87a04ae3a60955eb53568
+## Work in progress
+
+* vegab
+
+* params_to_path
+
+* ...
