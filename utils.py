@@ -2,8 +2,6 @@
 
 """
 Random useful commands
-
-TODO(kudkudak): Make this implementation more robust. Not working really well sometimes, especially for multirpcoess setting.
 """
 
 import sys, subprocess

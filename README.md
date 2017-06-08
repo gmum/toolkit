@@ -1,15 +1,11 @@
 # toolkit
 
-* burrito
+A collection of *standalone* useful tools:
 
-* job_pool
+* burrito - wrapper for scripts
 
-* visdom_plotter
+* job_pool - extends functionality of map
 
-## Work in progress
+* visdom_plotter - easy plotting of script results to visdom
 
-* vegab
-
-* params_to_path
-
-* ...
+* utils - random things

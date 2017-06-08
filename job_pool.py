@@ -5,6 +5,8 @@
  caching, easy interruption and logging
 
  Includes two extensions of map and JobPool which is basically improved map + json bookkeeping
+
+ Note: Consider using joblib. smart_map is though still super useful, especially in notebook
 """
 
 import json

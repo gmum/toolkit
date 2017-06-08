@@ -4,6 +4,9 @@
 
  Similar to https://github.com/IDSIA/sacred and
  https://github.com/micheles/plac/blob/0.9.6/doc/plac.pdf
+
+ Note: argh implements subset of functionality that often is enough, consider
+ using it first
 """
 __author__ = "Stanislaw 'kudkudak' Jastrzebski"
 
