@@ -2,7 +2,7 @@
 
 A collection of *standalone* useful tools:
 
-* burrito - wrapper for scripts
+* vegab/burrito - wrapper for scripts
 
 * job_pool - extends functionality of map
 
