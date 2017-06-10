@@ -11,7 +11,7 @@ import numpy as np
 import logging
 logging.getLogger(__name__)
 
-def get_cifar(dataset="cifar10", data_format="channel_first", augmented=False, batch_size=128, preprocessing="center"):
+def get_cifar(dataset="cifar10", data_format="channels_first", augmented=False, batch_size=128, preprocessing="center"):
     """
     Returns train iterator and test X, y.
     """
@@ -26,8 +26,8 @@ def get_cifar(dataset="cifar10", data_format="channel_first", augmented=False, b
 
     if x_train.shape[3] == 3:
         logging.info("Transposing")
-        x_train = x_train.transpose((0, 3, 1, 2))
-        x_test = x_test.transpose((0, 3, 1, 2))[0:100]
+        x_train = x_train.transpose((0, 3, 1, 2))[0:100] # For speed
+        x_test = x_test.transpose((0, 3, 1, 2))[0:100] # For speed
     assert x_train.shape[1] == 3
 
     if preprocessing == "center":
@@ -46,7 +46,7 @@ def get_cifar(dataset="cifar10", data_format="channel_first", augmented=False, b
     logging.info(str(x_test.shape[0]) + 'test samples')
 
     # convert class vectors to binary class matrices
-    y_train = np_utils.to_categorical(y_train)
+    y_train = np_utils.to_categorical(y_train)[0:100]
     y_test = np_utils.to_categorical(y_test)[0:100]
 
     train, test = None, [x_test, y_test]

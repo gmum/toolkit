@@ -6,7 +6,10 @@ Simple data getters. Each returns iterator for train and dataset for test/valid
 from keras.callbacks import ModelCheckpoint, LambdaCallback, Callback
 
 # Might misbehave with tensorflow-gpu, make sure u use tensorflow-cpu if using Theano for keras
-import tensorflow
+try:
+    import tensorflow
+except:
+    pass
 
 import pandas as pd
 import os
@@ -40,43 +43,56 @@ class DumpTensorflowSummaries(Callback):
         self.file_writer.add_summary(
             summary, epoch)
 
-def cifar_training_loop(model, optimizer, train, valid,
+def cifar_training_loop(model, train, valid,
         n_epochs, learning_rate_schedule, save_path):
 
-    if os.path.exists(save_path, "loop_state.pkl"):
+    if os.path.exists(os.path.join(save_path, "loop_state.pkl")):
         logger.info("Reloading loop state")
         loop_state = pickle.load(open(os.path.join(save_path, "loop_state.pkl")))
     else:
         loop_state = {'last_epoch_done_id': -1}
 
-    if os.path.exists(save_path, "model.h5"):
-        model.load_weights(os.path.exists(save_path, "model.h5"))
+    if os.path.exists(os.path.join(save_path, "model.h5")):
+        model.load_weights(os.path.join(save_path, "model.h5"))
 
-    samples_per_epoch = 50000
+    samples_per_epoch = 1000
 
     callbacks = []
 
     def lr_schedule(epoch, logs):
         for e, v in learning_rate_schedule:
             if epoch >= e:
-                optimizer.lr.set_value(v)
+                model.optimizer.lr.set_value(v)
                 break
         logger.info("Fix learning rate to {}".format(v))
 
     callbacks.append(LambdaCallback(on_epoch_end=lr_schedule))
 
     def save_history(epoch, logs):
-        H = model.history.history
-        pd.DataFrame(H).to_csv(os.path.join(save_path, "history.csv"))
+        history_path = os.path.join(save_path, "history.csv")
+        if os.path.exists(history_path):
+            H = pd.read_csv(history_path)
+            H = {col: list(H[col].values) for col in H.columns}
+        else:
+            H = {}
+
+        for key, value in logs.items():
+            if key not in H:
+                H[key] = [value]
+            else:
+                H[key].append(value)
+
+        pd.DataFrame(H).to_csv(os.path.join(save_path, "history.csv"), index=False)
 
     callbacks.append(LambdaCallback(on_epoch_end=save_history))
-    callbacks.append(DumpTensorflowSummaries(save_path=save_path))
+    # Uncomment if you have tensorflow installed correctly
+    # callbacks.append(DumpTensorflowSummaries(save_path=save_path))
     callbacks.append(ModelCheckpoint(monitor='val_acc',
         save_weights_only=False, filepath=os.path.join(save_path, "model.h5")))
 
     def save_loop_state(epoch, logs):
         loop_state = {"last_epoch_done_id": epoch}
-        pickle.dump(loop_state, open(os.path.join(save_path, "loop_state.pkl", "w")))
+        pickle.dump(loop_state, open(os.path.join(save_path, "loop_state.pkl"), "w"))
     callbacks.append(LambdaCallback(on_epoch_end=save_loop_state))
 
     _ = model.fit_generator(train,

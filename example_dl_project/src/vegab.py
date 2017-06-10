@@ -31,6 +31,7 @@ Inspired by Dzimitry Bahdanau code, burrito (internally used in GMUM) and argh
 """
 from __future__ import print_function
 
+import traceback
 import logging
 import argparse
 import datetime
@@ -50,10 +51,10 @@ import inspect
 
 logger = logging.getLogger(__name__)
 
+
 ### Config registry ###
 
 class ConfigRegistry(object):
-
     def __init__(self):
         self._configs = {}
 
@@ -71,6 +72,7 @@ class ConfigRegistry(object):
         if name in self._configs:
             raise KeyError("Config already registered " + name)
         self._configs[name] = copy.deepcopy(config)
+
 
 def config_from_folder(path):
     """
@@ -91,6 +93,7 @@ def config_from_folder(path):
 
     return c
 
+
 ### Simple plugin system ###
 
 def _utc_date(format="%Y_%m_%d"):
@@ -99,7 +102,8 @@ def _utc_date(format="%Y_%m_%d"):
 
 def _utc_timestamp():
     return str(int(10 * (datetime.datetime.utcnow() - datetime.datetime(1970, 1,
-                                                                        1)).total_seconds()))
+        1)).total_seconds()))
+
 
 def _timestamp_namer(fnc_kwargs=None):
     return _utc_date() + "_" + _utc_timestamp()
@@ -108,30 +112,27 @@ def _timestamp_namer(fnc_kwargs=None):
 def _kwargs_namer(fnc_kwargs=None, args_to_use=set()):
     if len(args_to_use):
         return "_".join("{}={}".format(k, v) for k, v in OrderedDict(fnc_kwargs).iteritems()
-                            if k not in ['config', 'save_path'])
+            if k not in ['config', 'save_path'])
     else:
         return "_".join("{}={}".format(k, v) for k, v in OrderedDict(fnc_kwargs).iteritems()
             if k in args_to_use)
 
+
 def _time_prefix(fnc_kwargs=None):
     return "_".join("{}={}".format(k, v) for k, v in OrderedDict(fnc_kwargs).iteritems()
-                        if k not in ['config', 'save_path'])
-
+        if k not in ['config', 'save_path'])
 
 
 class VegabPlugin(object):
-
     def on_parsed_args(self, args):
         return args
 
     def on_before_call(self, config, save_path):
         pass
 
-    def on_error(self, config, save_path):
-        pass
-
     def on_after_call(self, config, save_path):
         pass
+
 
 class VisdomPlotter(VegabPlugin):
     """
@@ -162,7 +163,7 @@ class AutomaticNamer(VegabPlugin):
         else:
             # Fine to have ifs here as long as we have just few choices
             if namer == "kwargs_namer":
-                self.namer =  _kwargs_namer
+                self.namer = _kwargs_namer
             if namer == "timestamp_namer":
                 self.namer = _timestamp_namer
             else:
@@ -178,7 +179,10 @@ class AutomaticNamer(VegabPlugin):
             else:
                 args.save_path = os.path.join(args.save_path, name)
 
+        logger.info("Saving to " + args.save_path)
+
         return args
+
 
 class MetaSaver(VegabPlugin):
     """
@@ -186,28 +190,33 @@ class MetaSaver(VegabPlugin):
     """
 
     def on_before_call(self, config, save_path):
-        frame = inspect.stack()[1 + 2] # Hardcoded, change if u plugin calling is change
+        frame = inspect.stack()[1 + 1]  # Hardcoded, change if u plugin calling is change
         module = inspect.getmodule(frame[0])
 
-        f_name = module.__name__
-
+        f_name = module.__file__
         assert os.system("cp {} {}".format(f_name, save_path)) == 0, "Failed to execute cp of source script"
 
         time_start = time.time()
-        cmd = " ".join(sys.argv)
+        cmd = "python " + " ".join(sys.argv)
         self.meta = {"cmd": cmd,
             "save_path": save_path,
             "start_utc_date": _utc_date(),
             "execution_time": -time_start}
 
+        json.dump(config, open(os.path.join(save_path, "config.json"), "w"), indent=4)
+        json.dump(self.meta, open(os.path.join(save_path, "meta.json"), "w"), indent=4)
+
     def on_after_call(self, config, save_path):
         self.meta['execution_time'] += time.time()
         json.dump(self.meta, open(os.path.join(save_path, "meta.json"), "w"), indent=4)
-        json.dump(config, open(os.path.join(save_path, "config.json"), "w"), indent=4)
+
 
 ### Redirect code ###
+# Stolen from Dzimitry Bahdanau redirecting code,
+# works more reliably than previous version
 
 from contextlib import contextmanager
+
 
 class Fork(object):
     def __init__(self, file1, file2):
@@ -227,6 +236,7 @@ class Fork(object):
 def replace_logging_stream(file_):
     root = logging.getLogger()
     if len(root.handlers) != 1:
+        print(root.handlers)
         raise ValueError("Don't know what to do with many handlers")
     if not isinstance(root.handlers[0], logging.StreamHandler):
         raise ValueError
@@ -258,7 +268,9 @@ def run_with_redirection(stdout_path, stderr_path, func):
                     with replace_standard_stream('stdout', out_fork):
                         with replace_logging_stream(err_fork):
                             func(*args, **kwargs)
+
     return func_wrapper
+
 
 def add_config_arguments(config, parser):
     for key, value in config.items():
@@ -279,9 +291,11 @@ def add_config_arguments(config, parser):
                 "--" + key, type=convertor,
                 help="A setting from the configuration")
 
+
 ## Config logger
 
 from logging import handlers
+
 
 def parse_logging_level(logging_level):
     """
@@ -296,9 +310,10 @@ def parse_logging_level(logging_level):
     if lowercase == 'critical': return logging.CRITICAL
     raise ValueError('Logging level {} could not be parsed.'.format(logging_level))
 
+
 def configure_logger(name=__name__,
         console_logging_level=logging.INFO,
-        file_logging_level=logging.INFO,
+        file_logging_level=None,
         log_file=None):
     """
     Configures logger
@@ -308,17 +323,15 @@ def configure_logger(name=__name__,
     :param log_file: path to log file (required if file_logging_level not None)
     :return instance of Logger class
     """
+
+    if len(logging.getLogger(name).handlers) != 0:
+        raise Exception("Please pass unconfigured logger")
+
     if console_logging_level is None and file_logging_level is None:
         return  # no logging
 
     if isinstance(console_logging_level, (str, unicode)):
         console_logging_level = parse_logging_level(console_logging_level)
-
-    if isinstance(file_logging_level, (str, unicode)):
-        file_logging_level = parse_logging_level(file_logging_level)
-
-    if not os.path.exists(os.path.dirname(log_file)):
-        os.makedirs(os.path.dirname(log_file))
 
     logger = logging.getLogger(name)
     logger.handlers = []
@@ -342,9 +355,11 @@ def configure_logger(name=__name__,
 
     return logger
 
+
 ### Main driver ###
 
 def main(config_registry, func, plugins=[], **training_func_kwargs):
+    configure_logger('', log_file=None)
 
     # Create parser and get config
     parser = argparse.ArgumentParser("Learning with a dictionary")
@@ -364,31 +379,28 @@ def main(config_registry, func, plugins=[], **training_func_kwargs):
         args = p.on_parsed_args(args)
 
     config = config_registry[args.config]
-    for key in config:
-        if key in args and getattr(args, key) is not None:
+    for key in args.__dict__:
+        if key not in config.keys():
+            if key not in ['save_path', 'config']:
+                raise Exception("Not recognised " + key)
+        elif getattr(args, key) is not None:
             config[key] = getattr(args, key)
 
-    # Run with redirection
+    # Do some configurations, then run with redirection
     def call_training_func():
         pprint.pprint(config)
-        if not os.path.exists(args.save_path):
-            os.mkdir(args.save_path)
+        logger.info("Calling function {}".format(func.__name__))
+        func(config, args.save_path, **training_func_kwargs)
+        logger.info("Finished {}".format(func.__name__))
 
         for p in plugins:
-            p.on_before_call(config, args.save_path)
+            p.on_after_call(config, args.save_path)
 
-        try:
-            logger.info("Calling function {}".format(func.__name__))
-            configure_logger('', log_file=os.path.join(args.save_path, 'log.txt'))
-            func(config, args.save_path, **training_func_kwargs)
-            logger.info("Finished {}".format(func.__name__))
+    if not os.path.exists(args.save_path):
+        os.mkdir(args.save_path)
 
-            for p in plugins:
-                p.on_after_call(config, args.save_path)
-
-        except Exception, e:
-            for p in plugins:
-                p.on_error(e, config, args.save_path)
+    for p in plugins:
+        p.on_before_call(config, args.save_path)
 
     run_with_redirection(
         os.path.join(args.save_path, 'stdout.txt'),
