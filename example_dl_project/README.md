@@ -8,7 +8,19 @@ The main idea is that there is a set of "base config" and you can run scripts as
  python src/scripts/train_simple_CNN.py cifar10 results/test_run --n_filters=10
 ```
 
-, which slighty modifies base config of simple_CNN by changing n_filters.
+, which slighty modifies base config of simple_CNN by changing n_filters. After running you can find following goodies inside
+your results directory:
+
+```
+-rw-r--r--@  1 kudkudak  staff      144 Jun 10 18:04 history.csv
+-rw-r--r--@  1 kudkudak  staff       35 Jun 10 18:04 loop_state.pkl
+-rw-r--r--@  1 kudkudak  staff      200 Jun 10 18:04 meta.json
+-rw-r--r--@  1 kudkudak  staff  2593544 Jun 10 18:04 model.h5
+-rw-r--r--@  1 kudkudak  staff     1578 Jun 10 18:04 stderr.txt
+-rw-r--r--@  1 kudkudak  staff     2507 Jun 10 18:04 stdout.txt
+-rw-r--r--@  1 kudkudak  staff      300 Jun 10 18:04 config.json
+-rw-r--r--@  1 kudkudak  staff     1211 Jun 10 18:04 train_simple_CNN.py
+```
 
 
 ## Project structure
