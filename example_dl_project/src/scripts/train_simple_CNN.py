@@ -3,42 +3,33 @@
 """
 Trains simple CNN on cifar10/cifar100
 """
-import cPickle
-import json
-import logging
-import os
-import sys
-import argh  # pip install argh --user
-import keras.backend as K
-import numpy as np
-import theano
-import theano.tensor as T
 
-from keras.backend.common import _EPSILON
-from keras.callbacks import CSVLogger, ModelCheckpoint, LearningRateScheduler, LambdaCallback
-from keras.datasets import cifar10, cifar100
-from keras.engine import merge, Input, Model
-from keras.layers import Dense, Activation, Flatten, Convolution2D, AveragePooling2D, BatchNormalization, \
-    Dropout
 from keras.optimizers import SGD
-from keras.preprocessing.image import ImageDataGenerator
-from keras.regularizers import l2 as l2_reg
-from keras.utils import np_utils
 
-from src.layers import SkipForward, residual_block
-from src.keras_utils import *
-from src.utils import utc_timestamp, kwargs_namer, configure_logger, cos_loss
-
+from src.configs.simple_CNN import simple_CNN_configs
+from src.data import get_cifar
+from src.models import build_simple_model
+from src.training_loop import cifar_training_loop
 from vegab import main, MetaSaver, AutomaticNamer
+
 
 def train(config, save_path):
     # Load data
+    train, test = get_cifar(dataset=config['dataset'], batch_size=config['batch_size'],
+        augmented=config['augmented'], preprocessing='center')
 
     # Load model
+    model = build_simple_model(config)
 
     # Optimizer
+    optimizer = SGD(lr=config['learning_rate_schedule'])
 
-    # Call training loop
+    # Call training loop (warning: using test as valid. Please don't do this)
+    cifar_training_loop(model=model, optimizer=optimizer,
+        train=train, valid=test, learning_rate_schedule=config['learning_rate_schedule'],
+        save_path=save_path, n_epochs=config['n_epochs'])
+
 
 if __name__ == "__main__":
-    main(train, plugins=[MetaSaver(), AutomaticNamer(prefix="timestamp_namer")])
+    main(simple_CNN_configs, train,
+        plugins=[MetaSaver(), AutomaticNamer(as_prefix=True, namer="timestamp_namer")])

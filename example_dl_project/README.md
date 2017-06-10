@@ -25,10 +25,14 @@ Model definitions.
 
 ```{python}
 
-def init_simple_cnn(config):
+def build_simple_cnn(config):
     pass
 
 ```
+
+Note: if your model is complicated (for instance has custom inference procedure), it is a good
+idea to wrap model in a class supporting these methods. For instance you can construct new block in Blocks
+or new Model in keras.
 
 * src/training_loop.py
 
@@ -36,10 +40,13 @@ Resumable training loops (sometimes shipped with framework, e.g. Blocks). For in
 
 ```{python}
 
-def cifar_training_loop(model, train, valid, pickle_path):
+def cifar_training_loop(model, train, valid, [other params]):
     pass
 
 ```
+
+Note that training loop does not accept test set. This should be explicitely never look at during training,
+very easy to use it (even implicitely), and thus overfit.
 
 * src/scripts
 
@@ -51,9 +58,11 @@ Runners (usually use vegab/argh or other command line wrapper), following conven
 
 ```
 
+Any DL code should be resumable by default.
+
 * configs
 
-Stores configs use in the project as jsons (alternative is to use config_registry).
+Stores configs use in the project as jsons or config_registry. This projects uses config_registry.-
 
 * etc
 
