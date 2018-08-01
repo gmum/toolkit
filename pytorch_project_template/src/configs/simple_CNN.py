@@ -16,6 +16,7 @@ simple_CNN_configs.set_root_config({
   "lr_schedule": [[10, 0.1], [20, 0.01]],
   "dim_dense": 100,
   "n_filters": 30,
+  "reload": False,
   "seed": 777,
 })
 

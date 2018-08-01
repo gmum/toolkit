@@ -4,6 +4,7 @@
 Trains simple CNN on cifar10/cifar100
 
 Run like: python bin/train.py cifar10 results/test_run
+Reload like python bin/train.py cifar10 results/test_run --reload
 """
 
 from src.configs.simple_CNN import simple_CNN_configs
@@ -32,6 +33,16 @@ def train(config, save_path):
     optimizer = torch.optim.SGD(pytorch_model.parameters(), lr=config['lr'])
     model = Model(pytorch_model, optimizer, loss_function, [acc])
 
+    # TODO: Fix
+    # def lr_schedule(epoch, logs):
+    #     for e, v in learning_rate_schedule:
+    #         if epoch >= e:
+    #             model.optimizer.lr.set_value(v)
+    #             break
+    #     logger.info("Fix learning rate to {}".format(v))
+    #
+    # callbacks.append(LambdaCallback(on_epoch_end=lr_schedule))
+
     # training_loop(model=model, train=train, steps_per_epoch=steps_per_epoch, save_freq=config['save_freq'],
     #     checkpoint_monitor="val_acc", epochs=config['n_epochs'], save_path=save_path,
     #     reload=config['reload'],
@@ -40,6 +51,7 @@ def train(config, save_path):
     # Call training loop (warning: using test as valid. Please don't do this)
     steps_per_epoch = int(len(meta_data['x_train']) / config['batch_size'])
     training_loop(model=model,  train=train, valid=test, save_path=save_path, n_epochs=config['n_epochs'],
+        save_freq=1, reload=config['reload'],
         steps_per_epoch=steps_per_epoch)
 
 

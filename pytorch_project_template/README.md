@@ -2,7 +2,7 @@
 
     * [OK] Siplest cast working
     * Add back reloading
-    * Add back lr schedule
+    * Add back lr schedule and tensorflow summaries
     * Bring back bells and whisles from the improved training loop from the preivous 
     * Vegab better parsing kwargs
     * Multiple models showcase
