@@ -3,21 +3,93 @@
 Simple data getters. Each returns iterator for train and dataset for test/valid
 """
 
-from pytoune.framework.callbacks import ModelCheckpoint, Callback
+from pytoune.framework.callbacks import Callback
 
-# Might misbehave with tensorflow-gpu, make sure u use tensorflow-cpu if using Theano for keras
+# For Tensorboard only
+# Might misbehave with tensorflow-gpu, make sure u use tensorflow-cpu
 try:
     import tensorflow
 except:
     pass
 
-import pandas as pd
+from src.utils import save_weights
 
+import pandas as pd
+import numpy as np
 import os
 import pickle
 import logging
 logger = logging.getLogger(__name__)
 
+class ModelCheckpoint(Callback):
+    def __init__(self, filepath, model, optimizer,monitor='val_loss', verbose=0,
+            save_best_only=False,
+            mode='auto', period=1):
+        super(ModelCheckpoint, self).__init__()
+        self.monitor = monitor
+        self.optimizer = optimizer
+        self.verbose = verbose
+        self.filepath = filepath
+        self.model = model
+        self.save_best_only = save_best_only
+        self.period = period
+        self.epochs_since_last_save = 0
+
+        if mode not in ['auto', 'min', 'max']:
+            mode = 'auto'
+
+        if mode == 'min':
+            self.monitor_op = np.less
+            self.best = np.Inf
+        elif mode == 'max':
+            self.monitor_op = np.greater
+            self.best = -np.Inf
+        else:
+            if 'acc' in self.monitor or self.monitor.startswith('fmeasure'):
+                self.monitor_op = np.greater
+                self.best = -np.Inf
+            else:
+                self.monitor_op = np.less
+                self.best = np.Inf
+
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        del state['model']
+        del state['optimizer']
+        return state
+
+    def __setstate__(self, newstate):
+        newstate['model'] = self.model
+        newstate['optimizer'] = self.optimizer
+        self.__dict__.update(newstate)
+
+    def on_epoch_end(self, epoch, logs=None):
+        logs = logs or {}
+        self.epochs_since_last_save += 1
+        if self.epochs_since_last_save >= self.period:
+            self.epochs_since_last_save = 0
+            if self.save_best_only:
+                current = logs.get(self.monitor)
+                if current is None:
+                    logging.warning('Can save best model only with %s available, '
+                                    'skipping.' % (self.monitor), RuntimeWarning)
+                else:
+                    if self.monitor_op(current, self.best):
+                        if self.verbose > 0:
+                            print('Epoch %05d: %s improved from %0.5f to %0.5f,'
+                                  ' saving model to %s'
+                                  % (epoch, self.monitor, self.best,
+                            current, self.filepath))
+                        self.best = current
+                        save_weights(self.model.model, self.optimizer, self.filepath)
+                    else:
+                        if self.verbose > 0:
+                            print('Epoch %05d: %s did not improve' %
+                                  (epoch, self.monitor))
+            else:
+                if self.verbose > 0:
+                    print('Epoch %05d: saving model to %s' % (epoch, self.filepath))
+                    save_weights(self.model.model, self.optimizer, self.filepath)
 
 class LambdaCallback(Callback):
     def __init__(self,

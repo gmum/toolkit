@@ -5,7 +5,20 @@ Minor utilities
 import sys
 from functools import reduce
 
+import torch
 from torch.nn.modules.module import _addindent
+
+
+def save_weights(model, optimizer, filename):
+    """
+    Save all weights necessary to resume training
+    """
+    state = {
+        'model': model.state_dict(),
+        'optimizer': optimizer.state_dict(),
+    }
+    torch.save(state, filename)
+
 
 def summary(model, file=sys.stderr):
     def repr(model):

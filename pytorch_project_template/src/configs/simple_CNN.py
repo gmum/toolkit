@@ -12,7 +12,7 @@ simple_CNN_configs.set_root_config({
   "batch_size": 128,
   "augmented": True,
   "lr": 0.01,
-  "n_epochs": 2,
+  "n_epochs": 100,
   "lr_schedule": [[10, 0.1], [20, 0.01]],
   "dim_dense": 100,
   "n_filters": 30,
