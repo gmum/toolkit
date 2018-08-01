@@ -1,11 +1,23 @@
+# TODOs:
+
+    * [OK] Siplest cast working
+    * Add back reloading
+    * Add back lr schedule
+    * Bring back bells and whisles from the improved training loop from the preivous 
+    * Vegab better parsing kwargs
+    * Multiple models showcase
+    * Single config
+
 # Example project
+
+Warning: slightly outdate, but 
 
 Simple exemplary code training small CNN on CIFAR10/CIFAR100. 
 
 The main idea is that there is a set of "base config" and you can run scripts as:
 
 ```
- python src/scripts/train_simple_CNN.py cifar10 results/test_run --n_filters=10
+ python bin/train.py cifar10 results/test_run --n_filters=10
 ```
 
 , which slighty modifies base config of simple_CNN by changing n_filters. After running you can find following goodies inside

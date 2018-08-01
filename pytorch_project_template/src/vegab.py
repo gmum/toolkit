@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-v 0.3 (29.07.2018)
-
 Main function that can be used to standardize training and evaluation scripts. Named
 after vegetarian Kebap place in Cracow, Poland. Shipped as single file for now.
 
@@ -373,7 +371,7 @@ def configure_logger(name=__name__,
     if console_logging_level is None and file_logging_level is None:
         return  # no logging
 
-    if isinstance(console_logging_level, (str, unicode)):
+    if isinstance(console_logging_level, str):
         console_logging_level = parse_logging_level(console_logging_level)
 
     logger = logging.getLogger(name)
