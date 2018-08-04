@@ -1,12 +1,11 @@
 # TODOs:
 
     * [OK] Siplest cast working
-    * Add back reloading
-    * Add back lr schedule and tensorflow summaries
+    * [OK?] Add back reloading
+    * Extend vegab: passing lists, automatic json resolution, automatic kwargs?
+    * Add back lr schedule
+    * Bring back TF summaries
     * Bring back bells and whisles from the improved training loop from the preivous 
-    * Vegab better parsing kwargs
-    * Multiple models showcase
-    * Single config
 
 # Example project
 

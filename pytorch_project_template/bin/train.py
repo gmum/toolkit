@@ -5,6 +5,8 @@ Trains simple CNN on cifar10/cifar100
 
 Run like: python bin/train.py cifar10 results/test_run
 Reload like python bin/train.py cifar10 results/test_run --reload
+Pass LR schedule like: python bin/train.py cifar10 results/test_run --lr_schedule=[[1]]
+or python bin/train.py cifar10 results/test_run --lr_schedule="[[1]]"
 """
 
 from src.configs.simple_CNN import simple_CNN_configs
@@ -29,7 +31,8 @@ def train(config, save_path):
 
     pytorch_model = SimpleCNN(config)
     summary(pytorch_model)
-    loss_function = torch.nn.MSELoss()  # Because logsoftmax.
+    loss_function = torch.nn.MSELoss()  # Because logsoftmax. Be careful!
+    # loss_function = torch.nn.CrossEntropyLoss()  # Because logsoftmax. Be careful!
     optimizer = torch.optim.SGD(pytorch_model.parameters(), lr=config['lr'])
     model = Model(pytorch_model, optimizer, loss_function, [acc])
 

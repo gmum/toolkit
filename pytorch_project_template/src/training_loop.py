@@ -3,7 +3,6 @@
 Simple data getters. Each returns iterator for train and dataset for test/valid
 """
 
-from pytoune.framework import Model
 from src.callbacks import ModelCheckpoint, LambdaCallback, History, DumpTensorflowSummaries
 from src.utils import save_weights
 
@@ -21,7 +20,7 @@ logger = logging.getLogger(__name__)
 def _save_loop_state(epoch, logs, save_path, save_callbacks):
     logger.info("Saving loop_state.pkl")  # TODO: Debug?
 
-    loop_state = {"last_epoch_done_id": epoch, "callbacks": save_callbacks}
+    loop_state = {"epochs_done": epoch, "callbacks": save_callbacks} # 0 index
 
     ## Small hack to pickle Callbacks in keras ##
     if len(save_callbacks):
@@ -50,6 +49,7 @@ def _save_history_csv(epoch, logs, save_path, H):
             out += "{key}={value}\t".format(key=key, value=value)
     logger.info(out)
     pd.DataFrame(H).to_csv(os.path.join(save_path, "history.csv"), index=False)
+
 
 def _print_history_csv(epoch, logs, H):
     for key, value in logs.items():
@@ -98,8 +98,8 @@ def training_loop(model, train, valid, n_epochs, save_path, steps_per_epoch, sav
         os.system("cp " + os.path.join(save_path, "history.pkl") + " " + os.path.join(save_path, "history.pkl.bckp"))
 
         # Setup the rest
-        epoch_start = loop_state['last_epoch_done_id'] + 1
-        if not len(H[next(iter(H))]) == epoch_start - 1:
+        epoch_start = loop_state['epochs_done'] # 0 index
+        if not len(H[next(iter(H))]) == loop_state['epochs_done']:
             raise IOError("Mismatch between saved history and epochs recorded. "
                           "Found len(H)={0} and epoch_start={1} "
                           "Run was likely interrupted incorrectly and cannot be rerun.".format(len(H[next(iter(H))]), epoch_start))
@@ -111,6 +111,12 @@ def training_loop(model, train, valid, n_epochs, save_path, steps_per_epoch, sav
                 e.__setstate__(e_loaded.__dict__)
             else:
                 e.__dict__.update(e_loaded.__dict__)
+
+        # Some diagnostics
+        logger.info(loop_state)
+        for k in H:
+            logger.info((k, len(H)))
+            break
     else:
         # Clean-up a bit..
         logger.info("Removing " + history_pkl_path)
@@ -139,8 +145,8 @@ def training_loop(model, train, valid, n_epochs, save_path, steps_per_epoch, sav
 
         callbacks.append(LambdaCallback(on_epoch_end=save_weights_fnc))
     # Always save from first epoch
-    def save_weights_fnc(epoch, logs=None):
-        logger.info("Saving model from epoch " + str(epoch))
+    def save_weights_fnc(logs=None):
+        logger.info("Saving model from beginning")
         save_weights(model.model, model.optimizer, os.path.join(save_path, "init_weights.pt"))
 
     callbacks.append(LambdaCallback(on_train_begin=save_weights_fnc))

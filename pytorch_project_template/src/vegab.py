@@ -184,6 +184,7 @@ class AutomaticNamer(VegabPlugin):
 
         return args
 
+
 class TBLinker(VegabPlugin):
     """
     Saves useful meta information (including source code)
@@ -286,6 +287,7 @@ def run_with_redirection(stdout_path, stderr_path, func):
 
     return func_wrapper
 
+
 def _get_default_args(func):
     """
     returns a dictionary of arg_name:default_values for the input function
@@ -297,23 +299,7 @@ def _get_default_args(func):
     return dict(zip(args[-len(defaults):], defaults))
 
 
-def add_arguments_from_func_signature(func, parser):
-    arg_types = {}
-
-    defaults = _get_default_args(func)
-    fnc_arg_spec = inspect.getargspec(func)[0]
-
-    for varname, default_value in defaults.items():
-        if default_value is not None:
-            arg_types[varname] = type(default_value)
-
-    for varname in fnc_arg_spec:
-        if varname in ['save_path']:
-            continue
-        parser.add_argument("--" + varname, type="str" if arg_types.get(varname, "str") == "json"
-        else arg_types.get(varname, "str"), default=defaults.get(varname, None))
-
-def add_config_arguments(config, parser):
+def _add_config_arguments(config, parser):
     for key, value in config.items():
         if isinstance(value, bool):
             parser.add_argument(
@@ -326,16 +312,20 @@ def add_config_arguments(config, parser):
             convertor = type(value)
             # let's assume all the lists in our configurations will be
             # lists of ints
-            if isinstance(value, list):
-                convertor = lambda s: map(int, s.split(','))
+            if isinstance(value, list) or isinstance(value, list):
+                convertor = lambda s: eval(s)
+                # convertor = lambda s: map(int, s.split(','))
             parser.add_argument(
                 "--" + key, type=convertor,
                 help="A setting from the configuration")
 
 
-## Config logger
-
-from logging import handlers
+def _add_arguments_from_func_signature(func, parser):
+    defaults = _get_default_args(func)
+    for varname, default_value in defaults.items():
+        if default_value is None:
+            raise NotImplementedError("Vegab works only for functions with fully specified default values")
+    _add_config_arguments(defaults, parser)
 
 
 def parse_logging_level(logging_level):
@@ -351,6 +341,7 @@ def parse_logging_level(logging_level):
     if lowercase == 'critical': return logging.CRITICAL
     raise ValueError('Logging level {} could not be parsed.'.format(logging_level))
 
+from logging import handlers
 
 def configure_logger(name=__name__,
         console_logging_level=logging.INFO,
@@ -405,7 +396,7 @@ def wrap_no_config_registry(func, plugins=[]):
     # Create parser and get config
     parser = argparse.ArgumentParser()
     parser.add_argument("save_path", help="The destination for saving")
-    add_arguments_from_func_signature(func, parser)
+    _add_arguments_from_func_signature(func, parser)
 
     args = parser.parse_args()
 
@@ -441,7 +432,6 @@ def wrap_no_config_registry(func, plugins=[]):
         call_training_func)()
 
 
-
 def wrap(config_registry, func, plugins=[MetaSaver()], **training_func_kwargs):
     configure_logger('', log_file=None)
 
@@ -455,7 +445,7 @@ def wrap(config_registry, func, plugins=[MetaSaver()], **training_func_kwargs):
         pass
     else:
         raise NotImplementedError("Not understood config registry")
-    add_config_arguments(config_registry.get_root_config(), parser)
+    _add_config_arguments(config_registry.get_root_config(), parser)
     args = parser.parse_args()
 
     # Plugin order matters sometimes (just like callbacks order in Blocks or Keras)

@@ -4,13 +4,15 @@ A collection of *standalone* useful tools:
 
 ## Maintained
 
-* vegab - wrapper for scripts. Last updated 07.2018.
+* vegab - wrapper for scripts. Last updated 08.2018. New in vegab:
+
+    - Elegant json/dict parsing
+
+* pytorch_project_template - template for a pytorch (using new featuers of vegab). Last updated 08.2018.
+
+* keras_project_template - template for a keras project (slightly outdated). Last updated around 04.2018.
 
 * utils - random things
-
-* pytorch_project_template - template for a pytorch (using new featuers of vegab)
-
-* keras_project_template - template for a keras project (slightly outdated)
 
 ## Old 
 

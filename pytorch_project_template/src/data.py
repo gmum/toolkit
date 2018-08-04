@@ -58,7 +58,7 @@ def get_cifar(dataset="cifar10", data_format="channels_first", augmented=False, 
     logging.info(str(x_train.shape[0]) + 'train samples')
     logging.info(str(x_test.shape[0]) + 'test samples')
 
-    # convert class vectors to binary class matrices
+    # # convert class vectors to binary class matrices
     y_train = np_utils.to_categorical(y_train)[0:N]
     y_test = np_utils.to_categorical(y_test)[0:N]
 
