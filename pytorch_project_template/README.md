@@ -1,9 +1,9 @@
 # TODOs:
 
     * [OK] Siplest cast working
-    * [OK?] Add back reloading
+    * [OK] Add back reloading
     * [OK] Extend vegab: passing lists, automatic json resolution, automatic kwargs?
-    * [WIP] Add back lr schedule
+    * [OK] Add back lr schedule
     * Bring back TF summaries
     * Bring back bells and whisles from the improved training loop from the preivous 
 
