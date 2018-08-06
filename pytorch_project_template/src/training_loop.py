@@ -24,7 +24,7 @@ def _save_loop_state(epoch, logs, save_path, save_callbacks):
 
     ## Small hack to pickle Callbacks in keras ##
     if len(save_callbacks):
-        m, vd = save_callbacks[0].model, save_callbacks[0].validation_data
+        m, vd = getattr(save_callbacks[0], "model", None), getattr(save_callbacks[0], "validation_data", None)
         for c in save_callbacks:
             c.model = None
             c.optimizer = None
@@ -48,10 +48,11 @@ def _save_history_csv(epoch, logs, save_path, H):
         if isinstance(value, (int, float, complex, np.float32, np.float64)):
             out += "{key}={value}\t".format(key=key, value=value)
     logger.info(out)
+    logger.info("Saving history to " + os.path.join(save_path, "history.csv"))
     pd.DataFrame(H).to_csv(os.path.join(save_path, "history.csv"), index=False)
 
 
-def _print_history_csv(epoch, logs, H):
+def _append_to_history_csv(epoch, logs, H):
     for key, value in logs.items():
         if isinstance(value, (int, float, complex, np.float32, np.float64)):
             if key not in H:
@@ -99,7 +100,7 @@ def training_loop(model, train, valid, n_epochs, save_path, steps_per_epoch, sav
 
         # Setup the rest
         epoch_start = loop_state['epochs_done'] # 0 index
-        if not len(H[next(iter(H))]) == loop_state['epochs_done']:
+        if not len(H[next(iter(H))]) == loop_state['epochs_done'] + 1:
             raise IOError("Mismatch between saved history and epochs recorded. "
                           "Found len(H)={0} and epoch_start={1} "
                           "Run was likely interrupted incorrectly and cannot be rerun.".format(len(H[next(iter(H))]), epoch_start))
@@ -128,8 +129,8 @@ def training_loop(model, train, valid, n_epochs, save_path, steps_per_epoch, sav
         H = {}
 
     # Add callbacks (TODO: move out)
+    callbacks.append(LambdaCallback(on_epoch_end=partial(_append_to_history_csv, H=H)))
     callbacks.append(LambdaCallback(on_epoch_end=partial(_save_history_csv, save_path=save_path, H=H)))
-    callbacks.append(LambdaCallback(on_epoch_end=partial(_print_history_csv, H=H)))
     callbacks.append(History(save_path=history_pkl_path))
     callbacks.append(ModelCheckpoint(monitor=checkpoint_monitor,
         model=model,

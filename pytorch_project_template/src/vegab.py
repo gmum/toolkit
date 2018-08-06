@@ -431,9 +431,8 @@ def wrap_no_config_registry(func, plugins=[]):
         os.path.join(args.save_path, 'stderr.txt'),
         call_training_func)()
 
-
-def wrap(config_registry, func, plugins=[MetaSaver()], **training_func_kwargs):
-    configure_logger('', log_file=None)
+def _parse_args(config_registry):
+    # Returns parsed args (using heavily Argument Parser)
 
     # Create parser and get config
     parser = argparse.ArgumentParser("vegab-wrapped script")
@@ -446,37 +445,45 @@ def wrap(config_registry, func, plugins=[MetaSaver()], **training_func_kwargs):
     else:
         raise NotImplementedError("Not understood config registry")
     _add_config_arguments(config_registry.get_root_config(), parser)
-    args = parser.parse_args()
+
+    args = parser.parse_args(sys.argv[1:])
+
+    return args.__dict__
+
+def wrap(config_registry, func, plugins=[MetaSaver()], **training_func_kwargs):
+    configure_logger('', log_file=None)
+
+    args = _parse_args(config_registry)
 
     # Plugin order matters sometimes (just like callbacks order in Blocks or Keras)
     for p in plugins:
         args = p.on_parsed_args(args)
 
-    config = config_registry[args.config]
-    for key in args.__dict__:
+    config = config_registry[args['config']]
+    for key in args:
         if key not in config.keys():
             if key not in ['save_path', 'config']:
                 raise Exception("Not recognised " + key)
-        elif getattr(args, key) is not None:
-            config[key] = getattr(args, key)
+        elif args[key] is not None:
+            config[key] = args[key]
 
     # Do some configurations, then run with redirection
     def call_training_func():
         pprint.pprint(config)
         logger.info("Calling function {}".format(func.__name__))
-        func(config, args.save_path, **training_func_kwargs)
+        func(config, args['save_path'], **training_func_kwargs)
         logger.info("Finished {}".format(func.__name__))
-        os.system("touch " + os.path.join(args.__dict__['save_path'], "FINISHED"))
+        os.system("touch " + os.path.join(args['save_path'], "FINISHED"))
         for p in plugins:
-            p.on_after_call(config, args.save_path)
+            p.on_after_call(config, args['save_path'])
 
-    if not os.path.exists(args.save_path):
-        os.mkdir(args.save_path)
+    if not os.path.exists(args['save_path']):
+        os.mkdir(args['save_path'])
 
     for p in plugins:
-        p.on_before_call(config, args.save_path)
+        p.on_before_call(config, args['save_path'])
 
     run_with_redirection(
-        os.path.join(args.save_path, 'stdout.txt'),
-        os.path.join(args.save_path, 'stderr.txt'),
+        os.path.join(args['save_path'], 'stdout.txt'),
+        os.path.join(args['save_path'], 'stderr.txt'),
         call_training_func)()
