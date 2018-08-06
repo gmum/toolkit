@@ -16,7 +16,7 @@ Simple exemplary code training small CNN on CIFAR10/CIFAR100.
 The main idea is that there is a set of "base config" and you can run scripts as:
 
 ```
- python bin/train.py cifar10 results/test_run --n_filters=10
+ python bin/train.py cifar10 results/test_run --n_filters=10 
 ```
 
 , which slighty modifies base config of simple_CNN by changing n_filters. After running you can find following goodies inside

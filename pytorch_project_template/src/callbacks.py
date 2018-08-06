@@ -128,6 +128,21 @@ class Callback(object):
         """
         pass
 
+
+
+class LRSchedule(Callback):
+    def __init__(self, lr_schedule):
+        self.lr_schedule = lr_schedule
+
+    def on_epoch_begin(self, epoch, logs):
+        for e, v in self.lr_schedule:
+            if epoch < e:
+                break
+        for group in self.model.optimizer.param_groups:
+            group['lr'] = v
+        logger.info("Fix learning rate to {}".format(v))
+
+
 class History(Callback):
     """Callback that records events into a `History` object.
 

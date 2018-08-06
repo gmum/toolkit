@@ -4,16 +4,13 @@
 Trains simple CNN on cifar10/cifar100
 
 Run like: python bin/train.py cifar10 results/test_run
-Reload like python bin/train.py cifar10 results/test_run --reload
-Pass LR schedule like: python bin/train.py cifar10 results/test_run --lr_schedule=[[1]]
-or python bin/train.py cifar10 results/test_run --lr_schedule="[[1]]"
 """
 
 from src.configs.simple_CNN import simple_CNN_configs
 from src.data import get_cifar
 from src.models import SimpleCNN
 from src.training_loop import training_loop
-from src.callbacks import LambdaCallback, Callback
+from src.callbacks import LRSchedule
 from src.vegab import wrap
 from src.utils import summary
 
@@ -29,18 +26,6 @@ def acc(y_pred, y_true):
     acc_pred = (y_pred == y_true).float().mean()
     return acc_pred * 100
 
-class LRSchedule(Callback):
-    def __init__(self, lr_schedule):
-        self.lr_schedule = lr_schedule
-
-    def on_epoch_begin(self, epoch, logs):
-        for e, v in self.lr_schedule:
-            if epoch < e:
-                break
-        for group in self.model.optimizer.param_groups:
-            group['lr'] = v
-        logger.info("Fix learning rate to {}".format(v))
-
 def train(config, save_path):
     train, test, meta_data = get_cifar(dataset=config['dataset'], batch_size=config['batch_size'],
         augmented=config['augmented'], preprocessing='center', seed=config['seed'])
@@ -48,17 +33,11 @@ def train(config, save_path):
     pytorch_model = SimpleCNN(config)
     summary(pytorch_model)
     loss_function = torch.nn.MSELoss()  # Because logsoftmax. Be careful!
-    # loss_function = torch.nn.CrossEntropyLoss()  # Because logsoftmax. Be careful!
     optimizer = torch.optim.SGD(pytorch_model.parameters(), lr=config['lr'])
     model = Model(pytorch_model, optimizer, loss_function, [acc])
 
     callbacks = []
     callbacks.append(LRSchedule(lr_schedule=config['lr_schedule']))
-
-    # training_loop(model=model, train=train, steps_per_epoch=steps_per_epoch, save_freq=config['save_freq'],
-    #     checkpoint_monitor="val_acc", epochs=config['n_epochs'], save_path=save_path,
-    #     reload=config['reload'],
-    #     valid=valid, custom_callbacks=callbacks, verbose=2)
 
     # Call training loop (warning: using test as valid. Please don't do this)
     steps_per_epoch = int(len(meta_data['x_train']) / config['batch_size'])
