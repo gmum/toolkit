@@ -40,7 +40,7 @@ def train(config, save_path):
     # Call training loop (warning: using test as valid. Please don't do this)
     steps_per_epoch = int(len(meta_data['x_train']) / config['batch_size'])
     training_loop(model=model,  train=train, valid=test, save_path=save_path, n_epochs=config['n_epochs'],
-        save_freq=1, reload=config['reload'],
+        save_freq=1, reload=config['reload'], use_tb=True,
         steps_per_epoch=steps_per_epoch, custom_callbacks=callbacks)
 
 

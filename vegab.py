@@ -431,6 +431,8 @@ def wrap_no_config_registry(func, plugins=[]):
         os.path.join(args.save_path, 'stderr.txt'),
         call_training_func)()
 
+from collections import defaultdict
+
 def _parse_args(config_registry):
     # Returns parsed args (using heavily Argument Parser)
 
@@ -446,9 +448,27 @@ def _parse_args(config_registry):
         raise NotImplementedError("Not understood config registry")
     _add_config_arguments(config_registry.get_root_config(), parser)
 
-    args = parser.parse_args(sys.argv[1:])
+    # Parse some dict kwargs. Hacky, but contained.
+    arg_kwargs = defaultdict(dict)
+    cleared_args = []
+    for arg in sys.argv[1:]:
+        if "." in arg:
+            if "=" not in arg:
+                raise NotImplementedError("Please pass dict arguments as --model.beta=1, not --model.beta 1")
+            arg = arg[2:] # Remove '--'
+            argnamekey, val = arg.split("=")
+            argname, key = argnamekey.split(".")
+            arg_kwargs[argname + "_kwargs"][key] = float(val)
+        else:
+            cleared_args.append(arg)
 
-    return args.__dict__
+    # Rest is parsed using the parses
+    d = parser.parse_args(cleared_args).__dict__
+
+    # TODO: Add some checking?
+    print(arg_kwargs)
+    d.update(arg_kwargs)
+    return d
 
 def wrap(config_registry, func, plugins=[MetaSaver()], **training_func_kwargs):
     configure_logger('', log_file=None)
@@ -462,7 +482,9 @@ def wrap(config_registry, func, plugins=[MetaSaver()], **training_func_kwargs):
     config = config_registry[args['config']]
     for key in args:
         if key not in config.keys():
-            if key not in ['save_path', 'config']:
+            if key.endswith("kwargs"): # Special treatment
+                config[key] = args[key]
+            elif key not in ['save_path', 'config']:
                 raise Exception("Not recognised " + key)
         elif args[key] is not None:
             config[key] = args[key]
