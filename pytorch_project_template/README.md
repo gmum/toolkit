@@ -1,7 +1,3 @@
-# TODOs:
-    * Refactor training loop code
-    * Conda install
-
 # Example project
 
 Simple exemplary PyTorch project template. 
