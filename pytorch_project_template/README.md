@@ -2,13 +2,13 @@
 
 Simple exemplary PyTorch project template. 
 
-The main idea is that there is a set of "base config" and you can run scripts as:
+The main idea is that there is a set of configs and you can run scripts as:
 
 ```
  python bin/cifar_train.py cifar10 test_run --model.n_filters=10 
 ```
 
-, which slighty modifies base config by changing n_filters. After running you can find following goodies inside
+, which slighty modifies the base config "cifar10" by changing n_filters to 10. After running you can find following goodies inside
 your results directory:
 
 ```
