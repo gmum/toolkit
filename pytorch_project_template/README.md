@@ -4,8 +4,14 @@
     * [OK] Add back reloading
     * [OK] Extend vegab: passing lists, automatic json resolution, automatic kwargs?
     * [OK] Add back lr schedule
+    * Extend vegab: passing kwargs as arg.key=. This will look nice
+    * Multi model passing version
     * Bring back TF summaries
-    * Bring back bells and whisles from the improved training loop from the preivous 
+    * Bring back bells and whisles from the improved training loop from the preivous
+        - See what are the common callbacks?
+    * Refactor training_loop script
+    * Update README.md
+    * Conda install
 
 # Example project
 
@@ -110,8 +116,3 @@ like keras or Theano/tensorflow.
 ### Why no environment.yml
 
 Not everyone uses environment.yml, this seems more generic
-
-### Why keras specific?
-
-It is not really keras specific. Same project structure works for other frameworks. For instance in Blocks one
-wouldn't need `src/training_loop.py`.

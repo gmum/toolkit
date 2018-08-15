@@ -3,24 +3,25 @@
 Simple data getters. Each returns iterator for train and dataset for test/valid
 """
 
-from src.callbacks import ModelCheckpoint, LambdaCallback, History, DumpTensorflowSummaries
-from src.utils import save_weights
-
-import pandas as pd
-
-from functools import partial
-
-import torch
+import logging
 import os
 import pickle
-import logging
+from functools import partial
+
 import numpy as np
+import pandas as pd
+import torch
+
+from src.callbacks import ModelCheckpoint, LambdaCallback, History
+from src.utils import save_weights
+
 logger = logging.getLogger(__name__)
+
 
 def _save_loop_state(epoch, logs, save_path, save_callbacks):
     logger.info("Saving loop_state.pkl")  # TODO: Debug?
 
-    loop_state = {"epochs_done": epoch, "callbacks": save_callbacks} # 0 index
+    loop_state = {"epochs_done": epoch, "callbacks": save_callbacks}  # 0 index
 
     ## Small hack to pickle Callbacks in keras ##
     if len(save_callbacks):
@@ -68,7 +69,6 @@ def _append_to_history_csv(epoch, logs, H):
 
 def training_loop(model, train, valid, n_epochs, save_path, steps_per_epoch, save_freq=0,
         reload=False, custom_callbacks=[], checkpoint_monitor="val_acc"):
-
     # Configure a bit.
     # NOTE: We distinguish two history objects. One can have large tensors, other stores just simple floats etc.
     # NOTE: Loop state stores callbacks and epoch_id
@@ -99,11 +99,12 @@ def training_loop(model, train, valid, n_epochs, save_path, steps_per_epoch, sav
         os.system("cp " + os.path.join(save_path, "history.pkl") + " " + os.path.join(save_path, "history.pkl.bckp"))
 
         # Setup the rest
-        epoch_start = loop_state['epochs_done'] # 0 index
+        epoch_start = loop_state['epochs_done']  # 0 index
         if not len(H[next(iter(H))]) == loop_state['epochs_done'] + 1:
             raise IOError("Mismatch between saved history and epochs recorded. "
                           "Found len(H)={0} and epoch_start={1} "
-                          "Run was likely interrupted incorrectly and cannot be rerun.".format(len(H[next(iter(H))]), epoch_start))
+                          "Run was likely interrupted incorrectly and cannot be rerun.".format(len(H[next(iter(H))]),
+                epoch_start))
 
         # Load all callbacks from the loop_state
         for e, e_loaded in zip(callbacks, loop_state['callbacks']):
@@ -145,6 +146,7 @@ def training_loop(model, train, valid, n_epochs, save_path, steps_per_epoch, sav
                 save_weights(model.model, model.optimizer, os.path.join(save_path, "model_last_epoch.pt"))
 
         callbacks.append(LambdaCallback(on_epoch_end=save_weights_fnc))
+
     # Always save from first epoch
     def save_weights_fnc(logs=None):
         logger.info("Saving model from beginning")

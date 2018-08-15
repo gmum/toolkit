@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-v 0.3 (29.07.2018)
-
 Main function that can be used to standardize training and evaluation scripts. Named
 after vegetarian Kebap place in Cracow, Poland. Shipped as single file for now.
 
@@ -186,6 +184,7 @@ class AutomaticNamer(VegabPlugin):
 
         return args
 
+
 class TBLinker(VegabPlugin):
     """
     Saves useful meta information (including source code)
@@ -288,6 +287,7 @@ def run_with_redirection(stdout_path, stderr_path, func):
 
     return func_wrapper
 
+
 def _get_default_args(func):
     """
     returns a dictionary of arg_name:default_values for the input function
@@ -299,23 +299,7 @@ def _get_default_args(func):
     return dict(zip(args[-len(defaults):], defaults))
 
 
-def add_arguments_from_func_signature(func, parser):
-    arg_types = {}
-
-    defaults = _get_default_args(func)
-    fnc_arg_spec = inspect.getargspec(func)[0]
-
-    for varname, default_value in defaults.items():
-        if default_value is not None:
-            arg_types[varname] = type(default_value)
-
-    for varname in fnc_arg_spec:
-        if varname in ['save_path']:
-            continue
-        parser.add_argument("--" + varname, type="str" if arg_types.get(varname, "str") == "json"
-        else arg_types.get(varname, "str"), default=defaults.get(varname, None))
-
-def add_config_arguments(config, parser):
+def _add_config_arguments(config, parser):
     for key, value in config.items():
         if isinstance(value, bool):
             parser.add_argument(
@@ -328,16 +312,20 @@ def add_config_arguments(config, parser):
             convertor = type(value)
             # let's assume all the lists in our configurations will be
             # lists of ints
-            if isinstance(value, list):
-                convertor = lambda s: map(int, s.split(','))
+            if isinstance(value, list) or isinstance(value, list):
+                convertor = lambda s: eval(s)
+                # convertor = lambda s: map(int, s.split(','))
             parser.add_argument(
                 "--" + key, type=convertor,
                 help="A setting from the configuration")
 
 
-## Config logger
-
-from logging import handlers
+def _add_arguments_from_func_signature(func, parser):
+    defaults = _get_default_args(func)
+    for varname, default_value in defaults.items():
+        if default_value is None:
+            raise NotImplementedError("Vegab works only for functions with fully specified default values")
+    _add_config_arguments(defaults, parser)
 
 
 def parse_logging_level(logging_level):
@@ -353,6 +341,7 @@ def parse_logging_level(logging_level):
     if lowercase == 'critical': return logging.CRITICAL
     raise ValueError('Logging level {} could not be parsed.'.format(logging_level))
 
+from logging import handlers
 
 def configure_logger(name=__name__,
         console_logging_level=logging.INFO,
@@ -373,7 +362,7 @@ def configure_logger(name=__name__,
     if console_logging_level is None and file_logging_level is None:
         return  # no logging
 
-    if isinstance(console_logging_level, (str, unicode)):
+    if isinstance(console_logging_level, str):
         console_logging_level = parse_logging_level(console_logging_level)
 
     logger = logging.getLogger(name)
@@ -407,7 +396,7 @@ def wrap_no_config_registry(func, plugins=[]):
     # Create parser and get config
     parser = argparse.ArgumentParser()
     parser.add_argument("save_path", help="The destination for saving")
-    add_arguments_from_func_signature(func, parser)
+    _add_arguments_from_func_signature(func, parser)
 
     args = parser.parse_args()
 
@@ -442,10 +431,8 @@ def wrap_no_config_registry(func, plugins=[]):
         os.path.join(args.save_path, 'stderr.txt'),
         call_training_func)()
 
-
-
-def wrap(config_registry, func, plugins=[MetaSaver()], **training_func_kwargs):
-    configure_logger('', log_file=None)
+def _parse_args(config_registry):
+    # Returns parsed args (using heavily Argument Parser)
 
     # Create parser and get config
     parser = argparse.ArgumentParser("vegab-wrapped script")
@@ -457,38 +444,46 @@ def wrap(config_registry, func, plugins=[MetaSaver()], **training_func_kwargs):
         pass
     else:
         raise NotImplementedError("Not understood config registry")
-    add_config_arguments(config_registry.get_root_config(), parser)
-    args = parser.parse_args()
+    _add_config_arguments(config_registry.get_root_config(), parser)
+
+    args = parser.parse_args(sys.argv[1:])
+
+    return args.__dict__
+
+def wrap(config_registry, func, plugins=[MetaSaver()], **training_func_kwargs):
+    configure_logger('', log_file=None)
+
+    args = _parse_args(config_registry)
 
     # Plugin order matters sometimes (just like callbacks order in Blocks or Keras)
     for p in plugins:
         args = p.on_parsed_args(args)
 
-    config = config_registry[args.config]
-    for key in args.__dict__:
+    config = config_registry[args['config']]
+    for key in args:
         if key not in config.keys():
             if key not in ['save_path', 'config']:
                 raise Exception("Not recognised " + key)
-        elif getattr(args, key) is not None:
-            config[key] = getattr(args, key)
+        elif args[key] is not None:
+            config[key] = args[key]
 
     # Do some configurations, then run with redirection
     def call_training_func():
         pprint.pprint(config)
         logger.info("Calling function {}".format(func.__name__))
-        func(config, args.save_path, **training_func_kwargs)
+        func(config, args['save_path'], **training_func_kwargs)
         logger.info("Finished {}".format(func.__name__))
-        os.system("touch " + os.path.join(args.__dict__['save_path'], "FINISHED"))
+        os.system("touch " + os.path.join(args['save_path'], "FINISHED"))
         for p in plugins:
-            p.on_after_call(config, args.save_path)
+            p.on_after_call(config, args['save_path'])
 
-    if not os.path.exists(args.save_path):
-        os.mkdir(args.save_path)
+    if not os.path.exists(args['save_path']):
+        os.mkdir(args['save_path'])
 
     for p in plugins:
-        p.on_before_call(config, args.save_path)
+        p.on_before_call(config, args['save_path'])
 
     run_with_redirection(
-        os.path.join(args.save_path, 'stdout.txt'),
-        os.path.join(args.save_path, 'stderr.txt'),
+        os.path.join(args['save_path'], 'stdout.txt'),
+        os.path.join(args['save_path'], 'stderr.txt'),
         call_training_func)()

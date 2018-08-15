@@ -12,19 +12,13 @@ from src.models import SimpleCNN
 from src.training_loop import training_loop
 from src.callbacks import LRSchedule
 from src.vegab import wrap
-from src.utils import summary
+from src.utils import summary, acc
 
 import torch
 from pytoune.framework import Model
 
 import logging
 logger = logging.getLogger(__name__)
-
-def acc(y_pred, y_true):
-    _, y_pred = y_pred.max(1)
-    _, y_true = y_true.max(1)
-    acc_pred = (y_pred == y_true).float().mean()
-    return acc_pred * 100
 
 def train(config, save_path):
     train, test, meta_data = get_cifar(dataset=config['dataset'], batch_size=config['batch_size'],

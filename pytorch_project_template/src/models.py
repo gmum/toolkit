@@ -24,3 +24,6 @@ class SimpleCNN(nn.Module):
         x = F.relu(self.fc1(x))
         x = self.fc2(x)
         return F.log_softmax(x) # TODO: Shoulnt be linear
+
+def small_simple_cnn():
+    return SimpleCNN()
