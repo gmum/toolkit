@@ -1,15 +1,21 @@
 # Example project
 
-Simple exemplary PyTorch project template. 
+Simple exemplary PyTorch project template. The key design principles are:
+ 
+ * Trainers are command line tools with a consistent interface
+ * Consistent way of saving results, logs, etc
+ * Generic high-quality training loop
 
-The main idea is that there is a set of configs and you can run scripts as:
+## Command line interface
+
+One of the key ideas is having a consistent interface to scripts; You can run all scripts as:
 
 ```
  python bin/cifar_train.py cifar10 test_run --model.n_filters=10 
 ```
 
-, which slighty modifies the base config "cifar10" by changing n_filters to 10. After running you can find following goodies inside
-your results directory:
+, which slighty modifies the base config ``cifar10`` by changing n_filters to 10. After running you can find following goodies inside
+the results directory ``test_run``:
 
 ```
 -rw-r--r--@  1 kudkudak  staff      144 Jun 10 18:04 history.csv
@@ -34,6 +40,7 @@ You can also change LR schedule by:
  python bin/cifar_train.py cifar10 test_run_lrsch --lr_schedule="[[3, 0.1],[100, 0.01]]"
 ```
 
+This is powered by a small utility called ``vegab``, which is implemented in ``src.vegab``.
 
 ## Project structure
 
