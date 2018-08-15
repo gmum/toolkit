@@ -5,7 +5,7 @@ Simple exemplary PyTorch project template.
 The main idea is that there is a set of "base config" and you can run scripts as:
 
 ```
- python bin/cifar_train.py cifar10 results/test_run --model.n_filters=10 
+ python bin/cifar_train.py cifar10 test_run --model.n_filters=10 
 ```
 
 , which slighty modifies base config by changing n_filters. After running you can find following goodies inside
@@ -25,13 +25,13 @@ your results directory:
 Here are some examples of running the trainer. For instance you can change model to LeNet by:
 
 ```
- python bin/cifar_train.py cifar10 results/test_run --model=lenet
+ python bin/cifar_train.py cifar10 test_run_lenet --model=lenet
 ```
 
 You can also change LR schedule by:
 
 ```
- python bin/cifar_train.py cifar10 results/test_run --lr_schedule="[[3, 0.1],[100, 0.01]]"
+ python bin/cifar_train.py cifar10 test_run_lrsch --lr_schedule="[[3, 0.1],[100, 0.01]]"
 ```
 
 
