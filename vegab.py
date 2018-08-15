@@ -452,9 +452,7 @@ def _parse_args(config_registry):
     arg_kwargs = defaultdict(dict)
     cleared_args = []
     for arg in sys.argv[1:]:
-        if "." in arg:
-            if "=" not in arg:
-                raise NotImplementedError("Please pass dict arguments as --model.beta=1, not --model.beta 1")
+        if "=" in arg and "." in arg.split("=")[0]:
             arg = arg[2:] # Remove '--'
             argnamekey, val = arg.split("=")
             argname, key = argnamekey.split(".")

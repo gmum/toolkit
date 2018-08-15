@@ -19,7 +19,19 @@ your results directory:
 -rw-r--r--@  1 kudkudak  staff     1578 Jun 10 18:04 stderr.txt
 -rw-r--r--@  1 kudkudak  staff     2507 Jun 10 18:04 stdout.txt
 -rw-r--r--@  1 kudkudak  staff      300 Jun 10 18:04 config.json
--rw-r--r--@  1 kudkudak  staff     1211 Jun 10 18:04 train_simple_CNN.py
+-rw-r--r--@  1 kudkudak  staff     1211 Jun 10 18:04 cifar_train.py
+```
+
+Here are some examples of running the trainer. For instance you can change model to LeNet by:
+
+```
+ python bin/cifar_train.py cifar10 results/test_run --model=lenet
+```
+
+You can also change LR schedule by:
+
+```
+ python bin/cifar_train.py cifar10 results/test_run --lr_schedule="[[3, 0.1],[100, 0.01]]"
 ```
 
 
