@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Simple data getters. Each returns iterator for train and dataset for test/valid
+Generic high quality training loop
 """
 
 import logging
