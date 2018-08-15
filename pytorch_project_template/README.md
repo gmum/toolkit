@@ -5,6 +5,8 @@ Simple exemplary PyTorch project template. The key design principles are:
  * Trainers are command line tools with a consistent interface
  * Consistent way of saving results, logs, etc
  * Generic high-quality training loop
+    - Resumable
+    - Results can be visualized using TensorBoard
 
 ## Command line interface
 
