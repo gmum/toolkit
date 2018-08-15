@@ -3,12 +3,15 @@
 """
 Trains simple CNN on cifar10/cifar100
 
-Run like: python bin/train.py cifar10 results/test_run
+Run like:
+    * python bin/cifar_train.py cifar10 results/test_run
+    * python bin/cifar_train.py cifar10 results/test_run --model.n_filters=20
+    * python bin/cifar_train.py cifar10_lenet results/test_run
 """
 
-from src.configs.simple_CNN import simple_CNN_configs
+from src.configs import cifar_train_configs
 from src.data import get_cifar
-from src.models import SimpleCNN
+from src import models
 from src.training_loop import training_loop
 from src.callbacks import LRSchedule
 from src.vegab import wrap
@@ -24,7 +27,8 @@ def train(config, save_path):
     train, test, meta_data = get_cifar(dataset=config['dataset'], batch_size=config['batch_size'],
         augmented=config['augmented'], preprocessing='center', seed=config['seed'])
 
-    pytorch_model = SimpleCNN(config)
+    pytorch_model_builder = models.__dict__[config['model']]
+    pytorch_model = pytorch_model_builder(**config.get('model_kwargs', {}))
     summary(pytorch_model)
     loss_function = torch.nn.MSELoss()  # Because logsoftmax. Be careful!
     optimizer = torch.optim.SGD(pytorch_model.parameters(), lr=config['lr'])
@@ -41,4 +45,4 @@ def train(config, save_path):
 
 
 if __name__ == "__main__":
-    wrap(simple_CNN_configs, train)
+    wrap(cifar_train_configs, train)

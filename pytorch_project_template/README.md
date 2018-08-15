@@ -4,8 +4,8 @@
     * [OK] Add back reloading
     * [OK] Extend vegab: passing lists, automatic json resolution, automatic kwargs?
     * [OK] Add back lr schedule
-    * Extend vegab: passing kwargs as arg.key=. This will look nice
-    * Multi model passing version
+    * [OK] Extend vegab: passing kwargs as arg.key=. This will look nice
+    * [OK] Multi model passing version
     * Bring back TF summaries
     * Bring back bells and whisles from the improved training loop from the preivous
         - See what are the common callbacks?

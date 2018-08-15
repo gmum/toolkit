@@ -458,7 +458,7 @@ def _parse_args(config_registry):
             arg = arg[2:] # Remove '--'
             argnamekey, val = arg.split("=")
             argname, key = argnamekey.split(".")
-            arg_kwargs[argname + "_kw"][key] = float(val)
+            arg_kwargs[argname + "_kwargs"][key] = float(val)
         else:
             cleared_args.append(arg)
 
@@ -482,7 +482,7 @@ def wrap(config_registry, func, plugins=[MetaSaver()], **training_func_kwargs):
     config = config_registry[args['config']]
     for key in args:
         if key not in config.keys():
-            if key.endswith("kw"): # Special treatment
+            if key.endswith("kwargs"): # Special treatment
                 config[key] = args[key]
             elif key not in ['save_path', 'config']:
                 raise Exception("Not recognised " + key)
