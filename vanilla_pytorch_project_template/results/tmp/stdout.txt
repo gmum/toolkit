@@ -1,18 +1,0 @@
-{'augmented': True,
- 'batch_size': 128,
- 'dataset': 'cifar10',
- 'lr': 0.1,
- 'lr_schedule': True,
- 'lr_schedule_kwargs': {'schedule': [[2, 0.01], [10000, 0.001]]},
- 'meta_saver': True,
- 'meta_saver_kwargs': {'force_train': 1.0},
- 'model': 'small_simple_cnn',
- 'model_kwargs': {},
- 'n_epochs': 1,
- 'n_examples': 1280,
- 'reload': True,
- 'save_freq': 1,
- 'save_history_every_k_examples': 150,
- 'seed': 777}
-Epoch 0/00
-Epoch 0/0 ETA 2s Step 1/10: loss: 5.877728, acc: 9.375000Epoch 0/0 ETA 2s Step 2/10: loss: 5.872053, acc: 9.375000Epoch 0/0 ETA 1s Step 3/10: loss: 5.870040, acc: 7.031250Epoch 0/0 ETA 1s Step 4/10: loss: 5.870912, acc: 7.812500Epoch 0/0 ETA 1s Step 5/10: loss: 5.870302, acc: 7.031250Epoch 0/0 ETA 1s Step 6/10: loss: 5.868536, acc: 9.375000Epoch 0/0 ETA 1s Step 7/10: loss: 5.866759, acc: 6.250000Epoch 0/0 ETA 0s Step 8/10: loss: 5.866314, acc: 10.937500Epoch 0/0 ETA 0s Step 9/10: loss: 5.865925, acc: 13.281250Epoch 0/0 ETA 0s Step 10/10: loss: 5.865511, acc: 10.937500Epoch 0/0 3.53s Step 10/10: loss: 5.869408, acc: 9.140625, val_loss: 5.865727, val_acc: 10.390625
