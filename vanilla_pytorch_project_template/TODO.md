@@ -3,7 +3,8 @@
 * [OK] Add environment configuration
 * [OK] Add callback saving all auxiliary filies that vegab saves
 * [OK] Check if finished. Does resetting work?
-* Add callback resolution poattern
+* [OK] Add callback resolution poattern
+* Per batch callback
 * Add gin
 * Add dataset resolution pattern
 * Add basic test

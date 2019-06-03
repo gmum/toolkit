@@ -19,19 +19,18 @@ import json
 
 logger = logging.getLogger(__name__)
 
-# TODO: Add common args here
 class Callback(object):
-    """
-    Attributes:
-        params (dict): Contains a key 'epoch' and a key 'steps_per_epoch'
-            which are passed to the `fit` function in `Model`. It may
-            contain other keys.
-        model (Model): a reference to the `Model` object which is using the
-            callback.
-    """
-
     def __init__(self):
-        self.model = None
+        pass
+
+    def set_config(self, config):
+        self.config = config
+
+    def set_meta_data(self, meta_data):
+        self.meta_data = meta_data
+
+    def set_save_path(self, save_path):
+        self.save_path = save_path
 
     def set_params(self, params):
         self.params = params
@@ -40,101 +39,34 @@ class Callback(object):
         self.model = model
 
     def on_epoch_begin(self, epoch, logs):
-        """
-        Is called before the begining of each epoch.
-
-        Args:
-            epoch (int): The epoch number.
-            logs (dict): Usually an empty dict.
-        """
         pass
 
     def on_epoch_end(self, epoch, logs):
-        """
-        Is called before the end of each epoch.
-
-        Args:
-            epoch (int): The epoch number.
-            logs (dict): Contains the following keys:
-
-                 * 'epoch': The epoch number.
-                 * 'loss': The average loss of the batches.
-                 * Other metrics: One key for each type of metrics. The metrics
-                   are also averaged.
-                 * val_loss': The average loss of the batches on the validation
-                   set.
-                 * Other metrics: One key for each type of metrics on the
-                   validation set. The metrics are also averaged.
-
-        Example::
-
-            logs = {'epoch': 6, 'loss': 4.34462, 'accuracy': 0.766, 'val_loss': 5.2352, 'val_accuracy': 0.682}
-        """
         pass
 
     def on_batch_begin(self, batch, logs):
-        """
-        Is called before the begining of each batch.
-
-        Args:
-            batch (int): The batch number.
-            logs (dict): Usually an empty dict.
-        """
         pass
 
     def on_batch_end(self, batch, logs):
-        """
-        Is called before the end of each batch.
-
-        Args:
-            batch (int): The batch number.
-            logs (dict): Contains the following keys:
-
-                 * 'batch': The batch number.
-                 * 'loss': The loss of the batch.
-                 * Other metrics: One key for each type of metrics.
-
-        Example::
-
-            logs = {'batch': 6, 'loss': 4.34462, 'accuracy': 0.766}
-        """
         pass
 
     def on_backward_end(self, batch):
-        """
-        Is called after the backpropagation but before the optimization step.
-
-        Args:
-            batch (int): The batch number.
-        """
         pass
 
     def on_train_begin(self, logs):
-        """
-        Is called before the begining of the training.
-
-        Args:
-            logs (dict): Usually an empty dict.
-        """
         pass
 
     def on_train_end(self, logs):
-        """
-        Is called before the end of the training.
-
-        Args:
-            logs (dict): Usually an empty dict.
-        """
         pass
 
 
-
 class LRSchedule(Callback):
-    def __init__(self, lr_schedule):
-        self.lr_schedule = lr_schedule
+    def __init__(self, schedule):
+        self.schedule = schedule
+        super(LRSchedule, self).__init__()
 
     def on_epoch_begin(self, epoch, logs):
-        for e, v in self.lr_schedule:
+        for e, v in self.schedule:
             if epoch < e:
                 break
         for group in self.model.optimizer.param_groups:
@@ -143,15 +75,8 @@ class LRSchedule(Callback):
 
 
 class History(Callback):
-    """Callback that records events into a `History` object.
-
-    This callback is automatically applied to
-    every Keras model. The `History` object
-    gets returned by the `fit` method of models.
-    """
-
-    def __init__(self, save_path=None):
-        self.save_path = save_path
+    def __init__(self, filename):
+        self.filename = filename
         super(History, self).__init__()
 
     def on_train_begin(self, logs=None):
@@ -165,13 +90,14 @@ class History(Callback):
             self.history.setdefault(k, []).append(v)
 
         if self.save_path is not None:
-            logger.info("Saving history to " + self.save_path)
-            pickle.dump(self.epoch, open(self.save_path, "wb"))
+            logger.info("Saving history to " + self.filename)
+            pickle.dump(self.epoch, open(self.filename, "wb"))
+
 
 class ModelCheckpoint(Callback):
     def __init__(self, filepath, model, optimizer, monitor='val_loss', verbose=0,
-            save_best_only=False,
-            mode='auto', period=1):
+                 save_best_only=False,
+                 mode='auto', period=1):
         super(ModelCheckpoint, self).__init__()
         self.monitor = monitor
         self.optimizer = optimizer
@@ -226,7 +152,7 @@ class ModelCheckpoint(Callback):
                             print('Epoch %05d: %s improved from %0.5f to %0.5f,'
                                   ' saving model to %s'
                                   % (epoch, self.monitor, self.best,
-                            current, self.filepath))
+                                     current, self.filepath))
                         self.best = current
                         save_weights(self.model.model, self.optimizer, self.filepath)
                     else:
@@ -241,15 +167,13 @@ class ModelCheckpoint(Callback):
 
 class LambdaCallback(Callback):
     def __init__(self,
-            on_epoch_begin=None,
-            on_epoch_end=None,
-            on_batch_begin=None,
-            on_batch_end=None,
-            on_train_begin=None,
-            on_train_end=None,
-            **kwargs):
+                 on_epoch_begin=None,
+                 on_epoch_end=None,
+                 on_batch_begin=None,
+                 on_batch_end=None,
+                 on_train_begin=None,
+                 on_train_end=None):
         super(LambdaCallback, self).__init__()
-        self.__dict__.update(kwargs)
         if on_epoch_begin is not None:
             self.on_epoch_begin = on_epoch_begin
         else:
@@ -277,15 +201,14 @@ class LambdaCallback(Callback):
 
 
 class DumpTensorboardSummaries(Callback):
-    def __init__(self, save_path):
-        self._save_path = save_path
+    def __init__(self):
         super(DumpTensorboardSummaries, self).__init__()
 
     @property
     def file_writer(self):
         if not hasattr(self, '_file_writer'):
             self._file_writer = tensorflow.summary.FileWriter(
-                self._save_path, flush_secs=10.)
+                self.save_path, flush_secs=10.)
         return self._file_writer
 
     def on_epoch_end(self, epoch, logs=None):
@@ -303,12 +226,12 @@ class DumpTensorboardSummaries(Callback):
 
 
 class MetaSaver(Callback):
-    def __init__(self, save_path, config):
-        self.save_path = save_path
-        self.config = config
+    def __init__(self, force_train=False):
+        self.force_train = force_train
+        super(MetaSaver, self).__init__()
 
     def on_train_begin(self, logs=None):
-        if os.path.exists(os.path.join(self.save_path, "FINISHED")):
+        if os.path.exists(os.path.join(self.save_path, "FINISHED")) and not self.force_train:
             logger.info("Finished training. Exiting. Remove FINISHED file if you want to train anyways.")
             exit(0)
 

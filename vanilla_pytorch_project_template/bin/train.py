@@ -13,7 +13,7 @@ from src.configs import cifar_train_configs
 from src.data import get_cifar
 from src import models
 from src.training_loop import training_loop
-from src.callbacks import LRSchedule, MetaSaver
+from src.callbacks import get_callback
 from src.vegab import wrap
 from src.utils import summary, acc
 
@@ -30,18 +30,19 @@ def train(config, save_path):
     pytorch_model_builder = models.__dict__[config['model']]
     pytorch_model = pytorch_model_builder(**config.get('model_kwargs', {}))
     summary(pytorch_model)
-    loss_function = torch.nn.MSELoss()  # Because logsoftmax. Be careful!
+    loss_function = torch.nn.MSELoss()
     optimizer = torch.optim.SGD(pytorch_model.parameters(), lr=config['lr'])
     model = Model(model=pytorch_model, optimizer=optimizer, loss_function=loss_function, metrics=[acc])
 
     callbacks = []
-    callbacks.append(LRSchedule(lr_schedule=config['lr_schedule']))
-    callbacks.append(MetaSaver(config=config, save_path=save_path))
+    for k in config:
+        clbk = get_callback(k, verbose=0, **config.get(k + "_kwargs", {}))
+        if clbk is not None:
+            callbacks.append(clbk)
 
-    # Call training loop (warning: using test as valid. Please don't do this)
     steps_per_epoch = int(len(meta_data['x_train']) / config['batch_size'])
     training_loop(model=model,  train=train, valid=test, save_path=save_path, n_epochs=config['n_epochs'],
-        save_freq=1, reload=config['reload'], use_tb=True,
+        save_freq=1, reload=config['reload'], use_tb=True, meta_data=meta_data, config=config,
         steps_per_epoch=steps_per_epoch, custom_callbacks=callbacks)
 
 

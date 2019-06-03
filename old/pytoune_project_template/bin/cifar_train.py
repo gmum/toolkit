@@ -13,7 +13,7 @@ from src.configs import cifar_train_configs
 from src.data import get_cifar
 from src import models
 from src.training_loop import training_loop
-from src.callbacks import LRSchedule
+from src.callbacks.callbacks import LRSchedule
 from src.vegab import wrap
 from src.utils import summary, acc
 

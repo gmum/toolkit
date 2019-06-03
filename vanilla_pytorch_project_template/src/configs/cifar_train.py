@@ -14,9 +14,13 @@ cifar_train_configs.set_root_config({
   "augmented": True,
   "lr": 0.1,
   "n_epochs": 100,
-  "lr_schedule": [[2,0.01],[10000,0.001]],
   "reload": False,
   "seed": 777,
+
+  # Callbacks
+  "lr_schedule_kwargs": {"schedule": [[2, 0.01], [10000, 0.001]]},
+  "meta_saver": True,
+  "lr_schedule": True,
 })
 
 c = cifar_train_configs['root']

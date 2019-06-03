@@ -8,6 +8,10 @@ Right now it includes:
 
 * **keras_project_template** - template for a ML project based on keras. Last updated 04.2018.
 
+## Future plans
+
+Tensorflow 2.0 keras template with eager mode and custom training loop.
+
 ## Old 
 
 Not maintained anymore, but kept for reference:

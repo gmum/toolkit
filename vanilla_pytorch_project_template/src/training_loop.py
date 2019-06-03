@@ -12,19 +12,17 @@ import numpy as np
 import pandas as pd
 import torch
 
-from src.callbacks import ModelCheckpoint, LambdaCallback, History, DumpTensorboardSummaries
+from src.callbacks.callbacks import ModelCheckpoint, LambdaCallback, History, DumpTensorboardSummaries
 from src.utils import save_weights
 
 logger = logging.getLogger(__name__)
 
 def _construct_default_callbacks(model, H, save_path, checkpoint_monitor, save_freq, custom_callbacks, use_tb):
-    loop_state_path = os.path.join(save_path, "loop_state.pkl")
-    history_csv_path = os.path.join(save_path, "history.csv")
     history_pkl_path = os.path.join(save_path, "history.pkl")
     callbacks = []
     callbacks.append(LambdaCallback(on_epoch_end=partial(_append_to_history_csv, H=H)))
     callbacks.append(LambdaCallback(on_epoch_end=partial(_save_history_csv, save_path=save_path, H=H)))
-    callbacks.append(History(save_path=history_pkl_path))
+    callbacks.append(History(filename=history_pkl_path))
     callbacks.append(ModelCheckpoint(monitor=checkpoint_monitor,
         model=model,
         optimizer=model.optimizer,
@@ -46,7 +44,7 @@ def _construct_default_callbacks(model, H, save_path, checkpoint_monitor, save_f
 
     callbacks.append(LambdaCallback(on_train_begin=save_weights_fnc))
     if use_tb:
-        callbacks.append(DumpTensorboardSummaries(save_path=save_path))
+        callbacks.append(DumpTensorboardSummaries())
     callbacks.append(LambdaCallback(on_epoch_end=partial(_save_loop_state, save_callbacks=custom_callbacks,
         save_path=save_path)))
     return callbacks
@@ -150,7 +148,7 @@ def _reload(model, save_path, callbacks):
 
     return H, epoch_start
 
-def training_loop(model, train, valid, n_epochs, save_path, steps_per_epoch, save_freq=0,
+def training_loop(model, meta_data, config, save_path, train, valid, n_epochs, steps_per_epoch, save_freq=0,
         reload=False, custom_callbacks=[], checkpoint_monitor="val_acc", use_tb=False):
     callbacks = list(custom_callbacks)
 
@@ -165,6 +163,13 @@ def training_loop(model, train, valid, n_epochs, save_path, steps_per_epoch, sav
 
     callbacks += _construct_default_callbacks(model, H, save_path, checkpoint_monitor,
         save_freq, custom_callbacks, use_tb)
+
+    # Configure callbacks
+    for clbk in callbacks:
+        clbk.set_save_path(save_path)
+        clbk.set_model(model)
+        clbk.set_meta_data(meta_data)
+        clbk.set_config(config)
 
     _ = model.fit_generator(train,
         initial_epoch=epoch_start,
