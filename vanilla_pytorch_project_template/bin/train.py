@@ -15,13 +15,17 @@ from src import models
 from src.training_loop import training_loop
 from src.callbacks import get_callback, LambdaCallbackPickableEveryKExamples
 from src.vegab import wrap
-from src.utils import summary, acc
+from src.utils import summary, acc, run_with_redirection
 
 import torch
 from poutyne.framework import Model
 
+import os
+from functools import partial
+
 import logging
 logger = logging.getLogger(__name__)
+
 
 def train(config, save_path):
     train, test, meta_data = get_cifar(dataset=config['dataset'], batch_size=config['batch_size'],
@@ -45,6 +49,12 @@ def train(config, save_path):
         use_tb=True, meta_data=meta_data, config=config,
         steps_per_epoch=steps_per_epoch, custom_callbacks=callbacks)
 
+# Bring back later
+# def train(config, save_path):
+#     run_with_redirection(
+#         os.path.join(save_path, 'stdout_my.txt'),
+#         os.path.join(save_path, 'stderr_my.txt'),
+#         partial(_train, config=config, save_path=save_path))()
 
 if __name__ == "__main__":
     wrap(cifar_train_configs, train)

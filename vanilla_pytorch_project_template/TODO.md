@@ -4,8 +4,7 @@
 * [OK] Add callback saving all auxiliary filies that vegab saves
 * [OK] Check if finished. Does resetting work?
 * [OK] Add callback resolution poattern
-* Per batch callback & test. Test history
-* Save stdout/stderr
+* [OK] Per batch callback & test. Test history
 * Add gin
 * Add dataset resolution pattern
 * Remove vegab 

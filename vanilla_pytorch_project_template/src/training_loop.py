@@ -8,12 +8,31 @@ import os
 import pickle
 from functools import partial
 
+import traceback
+import logging
+import argparse
+import optparse
+import datetime
+import sys
+import pprint
+import types
+import time
+import copy
+import subprocess
+import glob
+from collections import OrderedDict
+import os
+import signal
+import atexit
+import json
+import inspect
+
 import numpy as np
 import pandas as pd
 import torch
 
 from src.callbacks.callbacks import ModelCheckpoint, LambdaCallback, History, DumpTensorboardSummaries
-from src.utils import save_weights
+from src.utils import save_weights, run_with_redirection
 
 logger = logging.getLogger(__name__)
 
@@ -152,8 +171,8 @@ def _reload(model, save_path, callbacks):
     return H, epoch_start
 
 
-def _training_loop():
-    pass
+def _training_loop(model, **kwargs):
+    model.fit_generator(**kwargs)
 
 
 def training_loop(model, meta_data, config, save_path, train, valid, steps_per_epoch,
@@ -185,6 +204,7 @@ def training_loop(model, meta_data, config, save_path, train, valid, steps_per_e
         clbk.set_model(model)
         clbk.set_meta_data(meta_data)
         clbk.set_config(config)
+
 
     _ = model.fit_generator(train,
                             initial_epoch=epoch_start,
