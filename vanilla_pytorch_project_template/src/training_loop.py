@@ -17,18 +17,19 @@ from src.utils import save_weights
 
 logger = logging.getLogger(__name__)
 
-def _construct_default_callbacks(model, H, save_path, checkpoint_monitor, save_freq, custom_callbacks, use_tb):
-    history_pkl_path = os.path.join(save_path, "history.pkl")
+
+def _construct_default_callbacks(model, H, save_path, checkpoint_monitor, save_freq, custom_callbacks,
+                                 use_tb, save_history_every_k_examples):
     callbacks = []
     callbacks.append(LambdaCallback(on_epoch_end=partial(_append_to_history_csv, H=H)))
     callbacks.append(LambdaCallback(on_epoch_end=partial(_save_history_csv, save_path=save_path, H=H)))
-    callbacks.append(History(filename=history_pkl_path))
+    callbacks.append(History(save_every_k_examples=save_history_every_k_examples))
     callbacks.append(ModelCheckpoint(monitor=checkpoint_monitor,
-        model=model,
-        optimizer=model.optimizer,
-        save_best_only=True,
-        mode='max',
-        filepath=os.path.join(save_path, "model_best_val.pt")))
+                                     model=model,
+                                     optimizer=model.optimizer,
+                                     save_best_only=True,
+                                     mode='max',
+                                     filepath=os.path.join(save_path, "model_best_val.pt")))
     if save_freq > 0:
         def save_weights_fnc(epoch, logs):
             if epoch % save_freq == 0:
@@ -46,8 +47,9 @@ def _construct_default_callbacks(model, H, save_path, checkpoint_monitor, save_f
     if use_tb:
         callbacks.append(DumpTensorboardSummaries())
     callbacks.append(LambdaCallback(on_epoch_end=partial(_save_loop_state, save_callbacks=custom_callbacks,
-        save_path=save_path)))
+                                                         save_path=save_path)))
     return callbacks
+
 
 def _save_loop_state(epoch, logs, save_path, save_callbacks):
     logger.info("Saving loop_state.pkl")  # TODO: Debug?
@@ -93,9 +95,10 @@ def _append_to_history_csv(epoch, logs, H):
                 H[key].append(value)
 
             # Epoch is 0 first, so 1 key. Etc
-            assert len(H[key]) == epoch + 1, "Len H[{}] is {}, expected {} ".format(key, len(H[key]), epoch+1)
+            assert len(H[key]) == epoch + 1, "Len H[{}] is {}, expected {} ".format(key, len(H[key]), epoch + 1)
         else:
             pass
+
 
 def _reload(model, save_path, callbacks):
     model_last_epoch_path = os.path.join(save_path, "model_last_epoch.pt")
@@ -128,7 +131,7 @@ def _reload(model, save_path, callbacks):
         raise IOError("Mismatch between saved history and epochs recorded. "
                       "Found len(H)={0} and epoch_start={1} "
                       "Run was likely interrupted incorrectly and cannot be rerun.".format(len(H[next(iter(H))]),
-            epoch_start))
+                                                                                           epoch_start))
 
     # Load all callbacks from the loop_state
     for e, e_loaded in zip(callbacks, loop_state['callbacks']):
@@ -148,21 +151,33 @@ def _reload(model, save_path, callbacks):
 
     return H, epoch_start
 
-def training_loop(model, meta_data, config, save_path, train, valid, n_epochs, steps_per_epoch, save_freq=0,
-        reload=False, custom_callbacks=[], checkpoint_monitor="val_acc", use_tb=False):
+
+def _training_loop():
+    pass
+
+
+def training_loop(model, meta_data, config, save_path, train, valid, steps_per_epoch,
+                custom_callbacks=[], checkpoint_monitor="val_acc", use_tb=False):
     callbacks = list(custom_callbacks)
+
+    reload = config['reload']
+    n_epochs = config['n_epochs']
+    save_freq = config['save_freq']
+    save_history_every_k_examples = config['save_history_every_k_examples']
 
     if reload:
         H, epoch_start = _reload(model, save_path, callbacks)
     else:
         history_csv_path, history_pkl_path = os.path.join(save_path, "history.csv"), os.path.join(save_path,
-            "history.pkl")
-        logger.info("Removing " + history_pkl_path + " and " + history_csv_path)
-        os.system("rm " + history_pkl_path); os.system("rm " + history_csv_path)
+                                                                                                  "history.pkl")
+        logger.info("Removing {} and {}".format(history_pkl_path, history_csv_path))
+        os.system("rm " + history_pkl_path)
+        os.system("rm " + history_csv_path)
         H, epoch_start = {}, 0
 
     callbacks += _construct_default_callbacks(model, H, save_path, checkpoint_monitor,
-        save_freq, custom_callbacks, use_tb)
+                                              save_freq, custom_callbacks, use_tb,
+                                              save_history_every_k_examples)
 
     # Configure callbacks
     for clbk in callbacks:
@@ -172,9 +187,9 @@ def training_loop(model, meta_data, config, save_path, train, valid, n_epochs, s
         clbk.set_config(config)
 
     _ = model.fit_generator(train,
-        initial_epoch=epoch_start,
-        steps_per_epoch=steps_per_epoch,
-        epochs=n_epochs - 1, # Weird convention
-        verbose=1,
-        valid_generator=valid,
-        callbacks=callbacks)
+                            initial_epoch=epoch_start,
+                            steps_per_epoch=steps_per_epoch,
+                            epochs=n_epochs - 1,  # Weird convention
+                            verbose=1,
+                            valid_generator=valid,
+                            callbacks=callbacks)

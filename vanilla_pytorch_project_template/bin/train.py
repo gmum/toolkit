@@ -13,7 +13,7 @@ from src.configs import cifar_train_configs
 from src.data import get_cifar
 from src import models
 from src.training_loop import training_loop
-from src.callbacks import get_callback
+from src.callbacks import get_callback, LambdaCallbackPickableEveryKExamples
 from src.vegab import wrap
 from src.utils import summary, acc
 
@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 def train(config, save_path):
     train, test, meta_data = get_cifar(dataset=config['dataset'], batch_size=config['batch_size'],
-        augmented=config['augmented'], preprocessing='center', seed=config['seed'])
+        augmented=config['augmented'], preprocessing='center', seed=config['seed'], n_examples=config['n_examples'])
 
     pytorch_model_builder = models.__dict__[config['model']]
     pytorch_model = pytorch_model_builder(**config.get('model_kwargs', {}))
@@ -40,9 +40,9 @@ def train(config, save_path):
         if clbk is not None:
             callbacks.append(clbk)
 
-    steps_per_epoch = int(len(meta_data['x_train']) / config['batch_size'])
-    training_loop(model=model,  train=train, valid=test, save_path=save_path, n_epochs=config['n_epochs'],
-        save_freq=1, reload=config['reload'], use_tb=True, meta_data=meta_data, config=config,
+    steps_per_epoch = (len(meta_data['x_train']) - 1) // config['batch_size'] + 1
+    training_loop(model=model,  train=train, valid=test, save_path=save_path,
+        use_tb=True, meta_data=meta_data, config=config,
         steps_per_epoch=steps_per_epoch, custom_callbacks=callbacks)
 
 

@@ -1,16 +1,16 @@
-# Example project
+# Vanilla PyTorch project template
 
-Simple exemplary machine learning project template based on PyTorch. 
+Simple machine learning project template based on PyTorch. 
 
-## Quick dive in
+## Quick dive-in
 
 Run:
 
-1. Install minimal conda environment using ``conda env create --file vanilla_pytorch_project_template.yml``
+1. Install a minimal conda environment: ``conda env create --file vanilla_pytorch_project_template.yml``
 
 2. Activate the environment: ``source e.sh``
 
-3. Start training: ``bin/train.py cifar10_resnet test``
+3. Train a ResNet on Cifar10: ``bin/train.py cifar10_resnet test``
 
 ## Introduction
 
@@ -18,21 +18,15 @@ The main goal of this template is to provide a set of good practices for setting
 
 First, this template includes a quality, minimal, and generic trainer ``bin/train.py`` that has:
 
-* Command line interface
-* Training loop
-* Checkpointing
-* Easy parsing config using Google's gin 
+* Training loop (generic training script, checkpointing, callbacks, etc.)
+* Config handling using Google's gin 
 * Saving logs and other auxiliary files automagically
-* Callbacks
-* Easily swappable and configurable models
 
 We also include:
 
-* An exemplary experiment in `experiments/tune_lr` that
-showcases the above trainer, as well as presents clean design for separating
-training and experiment logics.
+* An example experiment in `experiments/tune_lr`
 
-* Environment setup
+* Environment configuration
 
 ## Command line interface
 
@@ -116,7 +110,3 @@ Stores configs use in the project as jsons or config_registry. This projects use
 * etc
 
 All misc. files relevant to the project (includes meeting notes, paper sources, etc.).
-
-## Requirements
-
-See requirements.txt

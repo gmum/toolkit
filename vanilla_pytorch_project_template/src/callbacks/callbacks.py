@@ -66,6 +66,7 @@ class LRSchedule(Callback):
         super(LRSchedule, self).__init__()
 
     def on_epoch_begin(self, epoch, logs):
+        # Epochs starts from 0
         for e, v in self.schedule:
             if epoch < e:
                 break
@@ -75,23 +76,47 @@ class LRSchedule(Callback):
 
 
 class History(Callback):
-    def __init__(self, filename):
-        self.filename = filename
+    """
+    History callback.
+
+    By default saves history every epoch, can be configured to save also every k examples
+    """
+    def __init__(self, save_every_k_examples=-1):
+        self.examples_seen = 0
+        self.save_every_k_examples = save_every_k_examples
+        self.examples_seen_since_last_population = 0
         super(History, self).__init__()
 
     def on_train_begin(self, logs=None):
-        self.epoch = []
+        # self.epoch = []
         self.history = {}
+        self.history_batch = {}
 
     def on_epoch_end(self, epoch, logs=None):
         logs = logs or {}
-        self.epoch.append(epoch)
+        # self.epoch.append(epoch)
         for k, v in logs.items():
             self.history.setdefault(k, []).append(v)
 
         if self.save_path is not None:
-            logger.info("Saving history to " + self.filename)
-            pickle.dump(self.epoch, open(self.filename, "wb"))
+            pickle.dump(self.history, open(os.path.join(self.save_path, "history.pkl"), "wb"))
+            if self.save_every_k_examples != -1:
+                pickle.dump(self.history_batch, open(os.path.join(self.save_path, "history_batch.pkl"), "wb"))
+
+    def on_batch_end(self, epoch, logs=None):
+        # Batches starts from 1
+        if self.save_every_k_examples != -1:
+            if getattr(self.model, "history_batch", None) is None:
+                setattr(self.model, "history_batch", self)
+            assert "size" in logs
+            self.examples_seen += logs['size']
+            logs['examples_seen'] = self.examples_seen
+            self.examples_seen_since_last_population += logs['size']
+
+            if self.examples_seen_since_last_population > self.save_every_k_examples:
+                for k, v in logs.items():
+                    self.history_batch.setdefault(k, []).append(v)
+                self.examples_seen_since_last_population = 0
 
 
 class ModelCheckpoint(Callback):
@@ -198,6 +223,47 @@ class LambdaCallback(Callback):
             self.on_train_end = on_train_end
         else:
             self.on_train_end = lambda logs: None
+
+
+class LambdaCallbackPickableEveryKExamples(LambdaCallback):
+    """
+    Runs lambda every K examples.
+
+    Note: Assumes 'size' key in batch logs denoting size of the current minibatch
+    """
+    def __init__(self,
+                 on_k_examples=None,
+                 k=45000,
+                 call_after_first_batch=False,
+                 **kwargs):
+        super(LambdaCallback, self).__init__()
+        self.__dict__.update(kwargs)
+        self.examples_seen = 0
+        self.call_after_first_batch = call_after_first_batch
+        self.examples_seen_since_last_call = 0
+        self.k = k
+        self.on_k_examples = on_k_examples
+        self.calls = 0
+
+    def on_batch_end(self, batch, logs=None):
+        # Batches starts from 1
+        assert "size" in logs
+        self.examples_seen += logs['size']
+        self.examples_seen_since_last_call += logs['size']
+
+        if (self.call_after_first_batch and batch == 1) \
+                or self.examples_seen_since_last_call > self.k:
+            logger.info("Batch " + str(batch))
+            logger.info("Firing on K examples, ex seen = " + str(self.examples_seen))
+            logger.info("Firing on K examples, ex seen last call = " + str(self.examples_seen_since_last_call))
+            self.on_k_examples(logs) # self.calls, self.examples_seen,
+            self.examples_seen_since_last_call = 0
+            self.calls += 1
+
+    def __getstate__(self):
+        state = self.__dict__.copy()
+        del state['on_k_examples']
+        return state
 
 
 class DumpTensorboardSummaries(Callback):

@@ -24,7 +24,7 @@ class LeNet(nn.Module):
         out = F.relu(self.fc1(out))
         out = F.relu(self.fc2(out))
         out = self.fc3(out)
-        return F.log_softmax(out)
+        return F.log_softmax(out, dim=1)
 
 def lenet(**config):
     assert len(config) == 0

@@ -1,120 +1,14 @@
-2019-06-03 15:28:16,894 - src.vegab - INFO - Calling function train
-2019-06-03 15:28:17,108 - root - INFO - Transposing
-2019-06-03 15:28:17,193 - root - INFO - x_train shape:(1280, 3, 32, 32)
-2019-06-03 15:28:17,193 - root - INFO - 1280train samples
-2019-06-03 15:28:17,193 - root - INFO - 1280test samples
-2019-06-03 15:28:17,222 - src.callbacks - WARNING - Couldn't find model_kwargs callback. Skipping.
-2019-06-03 15:28:17,222 - src.callbacks - WARNING - Couldn't find batch_size callback. Skipping.
-2019-06-03 15:28:17,222 - src.callbacks - WARNING - Couldn't find model callback. Skipping.
-2019-06-03 15:28:17,222 - src.callbacks - WARNING - Couldn't find augmented callback. Skipping.
-2019-06-03 15:28:17,222 - src.callbacks - WARNING - Couldn't find lr callback. Skipping.
-2019-06-03 15:28:17,223 - src.callbacks - WARNING - Couldn't find n_epochs callback. Skipping.
-2019-06-03 15:28:17,223 - src.callbacks - WARNING - Couldn't find reload callback. Skipping.
-2019-06-03 15:28:17,223 - src.callbacks - WARNING - Couldn't find seed callback. Skipping.
-2019-06-03 15:28:17,223 - src.callbacks - WARNING - Couldn't find lr_schedule_kwargs callback. Skipping.
-2019-06-03 15:28:17,223 - src.callbacks - WARNING - Couldn't find dataset callback. Skipping.
-2019-06-03 15:28:17,223 - src.callbacks - WARNING - Couldn't find meta_saver_kwargs callback. Skipping.
-2019-06-03 15:28:17,223 - src.training_loop - WARNING - Failed to find last epoch model or loop state
-2019-06-03 15:29:47,197 - src.vegab - INFO - Calling function train
-2019-06-03 15:29:47,395 - root - INFO - Transposing
-2019-06-03 15:29:47,484 - root - INFO - x_train shape:(1280, 3, 32, 32)
-2019-06-03 15:29:47,484 - root - INFO - 1280train samples
-2019-06-03 15:29:47,484 - root - INFO - 1280test samples
-2019-06-03 15:29:47,515 - src.callbacks - WARNING - Couldn't find model_kwargs callback. Skipping.
-2019-06-03 15:29:47,515 - src.callbacks - WARNING - Couldn't find batch_size callback. Skipping.
-2019-06-03 15:29:47,515 - src.callbacks - WARNING - Couldn't find model callback. Skipping.
-2019-06-03 15:29:47,515 - src.callbacks - WARNING - Couldn't find augmented callback. Skipping.
-2019-06-03 15:29:47,515 - src.callbacks - WARNING - Couldn't find lr callback. Skipping.
-2019-06-03 15:29:47,515 - src.callbacks - WARNING - Couldn't find n_epochs callback. Skipping.
-2019-06-03 15:29:47,515 - src.callbacks - WARNING - Couldn't find reload callback. Skipping.
-2019-06-03 15:29:47,515 - src.callbacks - WARNING - Couldn't find seed callback. Skipping.
-2019-06-03 15:29:47,516 - src.callbacks - WARNING - Couldn't find lr_schedule_kwargs callback. Skipping.
-2019-06-03 15:29:47,516 - src.callbacks - WARNING - Couldn't find dataset callback. Skipping.
-2019-06-03 15:29:47,516 - src.callbacks - WARNING - Couldn't find meta_saver_kwargs callback. Skipping.
-2019-06-03 15:29:47,516 - src.training_loop - WARNING - Failed to find last epoch model or loop state
-2019-06-03 15:30:47,286 - src.vegab - INFO - Calling function train
-2019-06-03 15:30:47,492 - root - INFO - Transposing
-2019-06-03 15:30:47,584 - root - INFO - x_train shape:(1280, 3, 32, 32)
-2019-06-03 15:30:47,584 - root - INFO - 1280train samples
-2019-06-03 15:30:47,584 - root - INFO - 1280test samples
-2019-06-03 15:30:47,617 - src.callbacks - WARNING - Couldn't find model_kwargs callback. Skipping.
-2019-06-03 15:30:47,617 - src.callbacks - WARNING - Couldn't find batch_size callback. Skipping.
-2019-06-03 15:30:47,617 - src.callbacks - WARNING - Couldn't find model callback. Skipping.
-2019-06-03 15:30:47,617 - src.callbacks - WARNING - Couldn't find augmented callback. Skipping.
-2019-06-03 15:30:47,618 - src.callbacks - WARNING - Couldn't find lr callback. Skipping.
-2019-06-03 15:30:47,618 - src.callbacks - WARNING - Couldn't find n_epochs callback. Skipping.
-2019-06-03 15:30:47,618 - src.callbacks - WARNING - Couldn't find reload callback. Skipping.
-2019-06-03 15:30:47,618 - src.callbacks - WARNING - Couldn't find seed callback. Skipping.
-2019-06-03 15:30:47,618 - src.callbacks - WARNING - Couldn't find lr_schedule_kwargs callback. Skipping.
-2019-06-03 15:30:47,618 - src.callbacks - WARNING - Couldn't find dataset callback. Skipping.
-2019-06-03 15:30:47,618 - src.callbacks - WARNING - Couldn't find meta_saver_kwargs callback. Skipping.
-2019-06-03 15:30:47,618 - src.training_loop - WARNING - Failed to find last epoch model or loop state
-2019-06-03 15:30:47,645 - src.training_loop - INFO - Saving model from beginning
-2019-06-03 15:30:47,650 - src.callbacks.callbacks - INFO - Fix learning rate to 0.01
-/Users/jastrs01/Dropbox/Projekty/toolkit/vanilla_pytorch_project_template/src/models/simple_cnn.py:26: UserWarning: Implicit dimension choice for log_softmax has been deprecated. Change the call to include dim=X as an argument.
-  return F.log_softmax(x)  # TODO: Shoulnt be linear
-2019-06-03 15:30:50,547 - src.training_loop - INFO - epoch=0	loss=5.866664791107178	time=2.896565701	acc=10.703125	val_loss=5.864383029937744	val_acc=13.28125	
-2019-06-03 15:30:50,547 - src.training_loop - INFO - Saving history to results/tmp/history.csv
-2019-06-03 15:30:50,552 - src.callbacks.callbacks - INFO - Saving history to results/tmp/history.pkl
-2019-06-03 15:30:50,553 - src.training_loop - INFO - Saving model from epoch 0
-2019-06-03 15:31:15,485 - src.vegab - INFO - Calling function train
-2019-06-03 15:31:15,690 - root - INFO - Transposing
-2019-06-03 15:31:15,776 - root - INFO - x_train shape:(1280, 3, 32, 32)
-2019-06-03 15:31:15,777 - root - INFO - 1280train samples
-2019-06-03 15:31:15,777 - root - INFO - 1280test samples
-2019-06-03 15:31:15,808 - src.training_loop - WARNING - Failed to find last epoch model or loop state
-2019-06-03 15:31:15,833 - src.training_loop - INFO - Saving model from beginning
-2019-06-03 15:31:15,836 - src.callbacks.callbacks - INFO - Fix learning rate to 0.01
-/Users/jastrs01/Dropbox/Projekty/toolkit/vanilla_pytorch_project_template/src/models/simple_cnn.py:26: UserWarning: Implicit dimension choice for log_softmax has been deprecated. Change the call to include dim=X as an argument.
-  return F.log_softmax(x)  # TODO: Shoulnt be linear
-2019-06-03 15:31:18,915 - src.training_loop - INFO - epoch=0	loss=5.868458271026611	time=3.0785892039999996	acc=6.796875	val_loss=5.866095066070557	val_acc=8.75	
-2019-06-03 15:31:18,915 - src.training_loop - INFO - Saving history to results/tmp/history.csv
-2019-06-03 15:31:18,922 - src.callbacks.callbacks - INFO - Saving history to results/tmp/history.pkl
-2019-06-03 15:31:18,924 - src.training_loop - INFO - Saving model from epoch 0
-2019-06-03 15:31:28,917 - src.vegab - INFO - Calling function train
-2019-06-03 15:31:29,123 - root - INFO - Transposing
-2019-06-03 15:31:29,214 - root - INFO - x_train shape:(1280, 3, 32, 32)
-2019-06-03 15:31:29,214 - root - INFO - 1280train samples
-2019-06-03 15:31:29,214 - root - INFO - 1280test samples
-2019-06-03 15:31:29,245 - src.training_loop - WARNING - Failed to find last epoch model or loop state
-2019-06-03 15:31:29,276 - src.training_loop - INFO - Saving model from beginning
-2019-06-03 15:31:29,280 - src.callbacks.callbacks - INFO - Fix learning rate to 0.01
-/Users/jastrs01/Dropbox/Projekty/toolkit/vanilla_pytorch_project_template/src/models/simple_cnn.py:26: UserWarning: Implicit dimension choice for log_softmax has been deprecated. Change the call to include dim=X as an argument.
-  return F.log_softmax(x)  # TODO: Shoulnt be linear
-2019-06-03 15:31:32,152 - src.training_loop - INFO - epoch=0	loss=5.876394844055175	time=2.8713334099999996	acc=7.96875	val_loss=5.866932201385498	val_acc=7.578125	
-2019-06-03 15:31:32,152 - src.training_loop - INFO - Saving history to results/tmp/history.csv
-2019-06-03 15:31:32,154 - src.callbacks.callbacks - INFO - Saving history to results/tmp/history.pkl
-2019-06-03 15:31:32,155 - src.training_loop - INFO - Saving model from epoch 0
-2019-06-03 15:31:32,158 - src.training_loop - INFO - Saving loop_state.pkl
-2019-06-03 15:31:32,188 - src.training_loop - INFO - Saved loop_state.pkl
-2019-06-03 15:31:32,188 - src.callbacks.callbacks - INFO - Fix learning rate to 0.01
-2019-06-03 15:31:35,129 - src.training_loop - INFO - epoch=1	loss=5.865403652191162	time=2.941128958	acc=8.984375	val_loss=5.865180206298828	val_acc=9.6875	
-2019-06-03 15:31:35,129 - src.training_loop - INFO - Saving history to results/tmp/history.csv
-2019-06-03 15:31:35,131 - src.callbacks.callbacks - INFO - Saving history to results/tmp/history.pkl
-2019-06-03 15:31:35,132 - src.training_loop - INFO - Saving model from epoch 1
-2019-06-03 15:31:35,133 - src.training_loop - INFO - Saving loop_state.pkl
-2019-06-03 15:31:35,164 - src.training_loop - INFO - Saved loop_state.pkl
-2019-06-03 15:31:35,164 - src.callbacks.callbacks - INFO - Fix learning rate to 0.001
-2019-06-03 15:31:41,437 - src.vegab - INFO - Calling function train
-2019-06-03 15:31:41,639 - root - INFO - Transposing
-2019-06-03 15:31:41,727 - root - INFO - x_train shape:(1280, 3, 32, 32)
-2019-06-03 15:31:41,727 - root - INFO - 1280train samples
-2019-06-03 15:31:41,727 - root - INFO - 1280test samples
-2019-06-03 15:31:41,758 - src.training_loop - WARNING - Reloading weights!
-2019-06-03 15:31:41,761 - src.training_loop - INFO - Reloading loop state!
-2019-06-03 15:31:41,790 - src.training_loop - INFO - Reloading history!
-2019-06-03 15:31:41,796 - src.training_loop - INFO - Done reloading!
-2019-06-03 15:31:41,820 - src.training_loop - INFO - {'epochs_done': 1, 'callbacks': [<src.callbacks.callbacks.MetaSaver object at 0xb3ef0cd68>, <src.callbacks.callbacks.LRSchedule object at 0xb3ef21208>]}
-2019-06-03 15:31:41,820 - src.training_loop - INFO - ('epoch', 6)
-2019-06-03 15:31:41,820 - src.training_loop - INFO - epoch_start=2
-2019-06-03 15:31:41,852 - src.training_loop - INFO - Saving model from beginning
-2019-06-03 15:31:41,853 - src.callbacks.callbacks - INFO - Fix learning rate to 0.001
-/Users/jastrs01/Dropbox/Projekty/toolkit/vanilla_pytorch_project_template/src/models/simple_cnn.py:26: UserWarning: Implicit dimension choice for log_softmax has been deprecated. Change the call to include dim=X as an argument.
-  return F.log_softmax(x)  # TODO: Shoulnt be linear
-2019-06-03 15:31:44,771 - src.training_loop - INFO - epoch=2	loss=5.864347839355469	time=2.91783712	acc=11.25	val_loss=5.8651001930236815	val_acc=9.921875	
-2019-06-03 15:31:44,772 - src.training_loop - INFO - Saving history to results/tmp/history.csv
-2019-06-03 15:31:44,774 - src.callbacks.callbacks - INFO - Saving history to results/tmp/history.pkl
-2019-06-03 15:31:44,775 - src.training_loop - INFO - Saving model from epoch 2
-2019-06-03 15:31:44,777 - src.training_loop - INFO - Saving loop_state.pkl
-2019-06-03 15:31:44,807 - src.training_loop - INFO - Saved loop_state.pkl
-2019-06-03 15:31:44,807 - src.callbacks.callbacks - INFO - Fix learning rate to 0.001
+2019-06-03 16:17:37,059 - src.vegab - INFO - Calling function train
+2019-06-03 16:17:37,255 - root - INFO - Transposing
+2019-06-03 16:17:37,344 - root - INFO - x_train shape:(1280, 3, 32, 32)
+2019-06-03 16:17:37,349 - root - INFO - 1280train samples
+2019-06-03 16:17:37,349 - root - INFO - 1280test samples
+2019-06-03 16:17:37,381 - src.training_loop - WARNING - Failed to find last epoch model or loop state
+2019-06-03 16:17:37,403 - src.training_loop - INFO - Saving model from beginning
+2019-06-03 16:17:37,405 - src.callbacks.callbacks - INFO - Fix learning rate to 0.01
+2019-06-03 16:17:40,938 - src.training_loop - INFO - epoch=0	loss=5.869408130645752	time=3.532380742	acc=9.140625	val_loss=5.8657269954681395	val_acc=10.390625	
+2019-06-03 16:17:40,938 - src.training_loop - INFO - Saving history to results/tmp/history.csv
+2019-06-03 16:17:40,944 - src.training_loop - INFO - Saving model from epoch 0
+2019-06-03 16:17:40,946 - src.training_loop - INFO - Saving loop_state.pkl
+2019-06-03 16:17:40,982 - src.training_loop - INFO - Saved loop_state.pkl
+2019-06-03 16:17:41,017 - src.vegab - INFO - Finished train

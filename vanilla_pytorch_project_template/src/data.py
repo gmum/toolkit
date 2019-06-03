@@ -22,13 +22,11 @@ def _to_gen_with_shuffling(dataset, batch_size, seed):
             yield dataset[0][id * batch_size:(id + 1) * batch_size], dataset[1][id * batch_size:(id + 1) * batch_size]
 
 
-def get_cifar(dataset="cifar10", data_format="channels_first", augmented=False, batch_size=128, preprocessing="center", seed=777):
+def get_cifar(dataset="cifar10", data_format="channels_first", augmented=False,
+              batch_size=128, preprocessing="center", seed=777, n_examples=1280):
     """
     Returns train iterator and test X, y.
     """
-
-    N = 1280
-
     # the data, shuffled and split between train and test sets
     if dataset == 'cifar10':
         (x_train, y_train), (x_test, y_test) = cifar10.load_data()
@@ -39,8 +37,8 @@ def get_cifar(dataset="cifar10", data_format="channels_first", augmented=False, 
 
     if x_train.shape[3] == 3:
         logging.info("Transposing")
-        x_train = x_train.transpose((0, 3, 1, 2))[0:N] # For speed
-        x_test = x_test.transpose((0, 3, 1, 2))[0:N] # For speed
+        x_train = x_train.transpose((0, 3, 1, 2))[0:n_examples]
+        x_test = x_test.transpose((0, 3, 1, 2))[0:n_examples]
     assert x_train.shape[1] == 3
 
     if preprocessing == "center":
@@ -59,8 +57,8 @@ def get_cifar(dataset="cifar10", data_format="channels_first", augmented=False, 
     logging.info(str(x_test.shape[0]) + 'test samples')
 
     # # convert class vectors to binary class matrices
-    y_train = np_utils.to_categorical(y_train)[0:N]
-    y_test = np_utils.to_categorical(y_test)[0:N]
+    y_train = np_utils.to_categorical(y_train)[0:n_examples]
+    y_test = np_utils.to_categorical(y_test)[0:n_examples]
 
     # float32
     x_train = x_train.astype("float32")
