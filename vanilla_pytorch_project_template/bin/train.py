@@ -1,24 +1,24 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Trains simple CNN on cifar10/cifar100
 
 Run like:
-    * python bin/cifar_train.py cifar10 results/test_run
-    * python bin/cifar_train.py cifar10 results/test_run --model.n_filters=20
-    * python bin/cifar_train.py cifar10_lenet results/test_run
+    * python bin/train.py cifar10 results/test_run
+    * python bin/train.py cifar10 results/test_run --model.n_filters=20
+    * python bin/train.py cifar10_lenet results/test_run
 """
 
 from src.configs import cifar_train_configs
 from src.data import get_cifar
 from src import models
 from src.training_loop import training_loop
-from src.callbacks import LRSchedule
+from src.callbacks import LRSchedule, MetaSaver
 from src.vegab import wrap
 from src.utils import summary, acc
 
 import torch
-from pytoune.framework import Model
+from poutyne.framework import Model
 
 import logging
 logger = logging.getLogger(__name__)
@@ -32,10 +32,11 @@ def train(config, save_path):
     summary(pytorch_model)
     loss_function = torch.nn.MSELoss()  # Because logsoftmax. Be careful!
     optimizer = torch.optim.SGD(pytorch_model.parameters(), lr=config['lr'])
-    model = Model(pytorch_model, optimizer, loss_function, [acc])
+    model = Model(model=pytorch_model, optimizer=optimizer, loss_function=loss_function, metrics=[acc])
 
     callbacks = []
     callbacks.append(LRSchedule(lr_schedule=config['lr_schedule']))
+    callbacks.append(MetaSaver(config=config, save_path=save_path))
 
     # Call training loop (warning: using test as valid. Please don't do this)
     steps_per_epoch = int(len(meta_data['x_train']) / config['batch_size'])

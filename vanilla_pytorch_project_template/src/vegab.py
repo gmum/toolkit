@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Main function that can be used to standardize training and evaluation scripts. Named
-after vegetarian Kebap place in Cracow, Poland. Shipped as single file for now.
+after a vegetarian Kebab place in Cracow, Poland. Shipped as a standalone file.
 
 * Called function accepts:
 - config dictionary (can be name from registry, or just json)
@@ -25,9 +25,7 @@ removes everything after run finishes or throws error
         g) config.json
         h) script source code
 
-
-Acknoledgments
-Inspired by Dzimitry Bahdanau code, burrito (internally used in GMUM) and argh
+Acknoledgments: Inspired by Dzimitry Bahdanau code, burrito (internally used in GMUM) and argh
 """
 from __future__ import print_function
 
@@ -468,7 +466,7 @@ def _parse_args(config_registry):
     d.update(arg_kwargs)
     return d
 
-def wrap(config_registry, func, plugins=[MetaSaver()], **training_func_kwargs):
+def wrap(config_registry, func, plugins=[], **training_func_kwargs):
     configure_logger('', log_file=None)
 
     args = _parse_args(config_registry)

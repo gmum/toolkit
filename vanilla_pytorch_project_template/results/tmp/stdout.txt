@@ -1,0 +1,66 @@
+{'augmented': True,
+ 'batch_size': 128,
+ 'dataset': 'cifar10',
+ 'lr': 0.1,
+ 'lr_schedule': [[2, 0.01], [10000, 0.001]],
+ 'model': 'small_simple_cnn',
+ 'model_kwargs': {},
+ 'n_epochs': 10,
+ 'reload': True,
+ 'seed': 777}
+Epoch 0/9Epoch 0/9 ETA 2s Step 1/10: loss: 5.882963, acc: 8.593750Epoch 0/9 ETA 2s Step 2/10: loss: 5.881490, acc: 12.500000Epoch 0/9 ETA 1s Step 3/10: loss: 5.877935, acc: 6.250000Epoch 0/9 ETA 1s Step 4/10: loss: 5.872784, acc: 10.937500Epoch 0/9 ETA 1s Step 5/10: loss: 5.872002, acc: 10.937500Epoch 0/9 ETA 1s Step 6/10: loss: 5.872185, acc: 11.718750Epoch 0/9 ETA 1s Step 7/10: loss: 5.870676, acc: 6.250000Epoch 0/9 ETA 0s Step 8/10: loss: 5.868449, acc: 12.500000Epoch 0/9 ETA 0s Step 9/10: loss: 5.869539, acc: 10.156250Epoch 0/9 ETA 0s Step 10/10: loss: 5.867883, acc: 7.812500Epoch 0/9 2.87s Step 10/10: loss: 5.873590, acc: 9.765625, val_loss: 5.867935, val_acc: 8.125000
+Epoch 1/9Epoch 1/9 ETA 2s Step 1/10: loss: 5.868923, acc: 6.250000Epoch 1/9 ETA 2s Step 2/10: loss: 5.867736, acc: 9.375000Epoch 1/9 ETA 1s Step 3/10: loss: 5.866865, acc: 12.500000Epoch 1/9 ETA 1s Step 4/10: loss: 5.866436, acc: 12.500000Epoch 1/9 ETA 1s Step 5/10: loss: 5.866846, acc: 7.031250Epoch 1/9 ETA 1s Step 6/10: loss: 5.864844, acc: 11.718750Epoch 1/9 ETA 1s Step 7/10: loss: 5.866508, acc: 9.375000Epoch 1/9 ETA 0s Step 8/10: loss: 5.865935, acc: 7.031250Epoch 1/9 ETA 0s Step 9/10: loss: 5.865107, acc: 10.156250Epoch 1/9 ETA 0s Step 10/10: loss: 5.864494, acc: 14.062500Epoch 1/9 2.88s Step 10/10: loss: 5.866369, acc: 10.000000, val_loss: 5.865522, val_acc: 9.531250
+Epoch 2/9Epoch 2/9 ETA 2s Step 1/10: loss: 5.864934, acc: 11.718750Epoch 2/9 ETA 1s Step 2/10: loss: 5.864497, acc: 10.937500Epoch 2/9 ETA 1s Step 3/10: loss: 5.865064, acc: 14.062500Epoch 2/9 ETA 1s Step 4/10: loss: 5.865540, acc: 13.281250Epoch 2/9 ETA 1s Step 5/10: loss: 5.865379, acc: 13.281250Epoch 2/9 ETA 1s Step 6/10: loss: 5.865007, acc: 14.062500Epoch 2/9 ETA 1s Step 7/10: loss: 5.864085, acc: 15.625000Epoch 2/9 ETA 0s Step 8/10: loss: 5.864964, acc: 10.937500{'augmented': True,
+ 'batch_size': 128,
+ 'dataset': 'cifar10',
+ 'lr': 0.1,
+ 'lr_schedule': [[2, 0.01], [10000, 0.001]],
+ 'model': 'small_simple_cnn',
+ 'model_kwargs': {},
+ 'n_epochs': 10,
+ 'reload': True,
+ 'seed': 777}
+{'epoch': [0, 1], 'loss': [5.8735904693603525, 5.866369342803955], 'time': [2.865035349, 2.882518127], 'acc': [9.765625, 10.0], 'val_loss': [5.867934703826903, 5.865522480010986], 'val_acc': [8.125, 9.53125]}
+Epoch 1/9Epoch 1/9 ETA 2s Step 1/10: loss: 5.865456, acc: 12.500000Epoch 1/9 ETA 2s Step 2/10: loss: 5.865705, acc: 7.812500Epoch 1/9 ETA 1s Step 3/10: loss: 5.865184, acc: 10.937500Epoch 1/9 ETA 1s Step 4/10: loss: 5.863883, acc: 16.406250Epoch 1/9 ETA 1s Step 5/10: loss: 5.865876, acc: 9.375000Epoch 1/9 ETA 1s Step 6/10: loss: 5.864812, acc: 13.281250Epoch 1/9 ETA 1s Step 7/10: loss: 5.864923, acc: 7.812500Epoch 1/9 ETA 0s Step 8/10: loss: 5.864617, acc: 9.375000Epoch 1/9 ETA 0s Step 9/10: loss: 5.864965, acc: 8.593750Epoch 1/9 ETA 0s Step 10/10: loss: 5.863449, acc: 13.281250Epoch 1/9 2.99s Step 10/10: loss: 5.864887, acc: 10.937500, val_loss: 5.864676, val_acc: 10.703125
+{'augmented': True,
+ 'batch_size': 128,
+ 'dataset': 'cifar10',
+ 'lr': 0.1,
+ 'lr_schedule': [[2, 0.01], [10000, 0.001]],
+ 'model': 'small_simple_cnn',
+ 'model_kwargs': {},
+ 'n_epochs': 10,
+ 'reload': True,
+ 'seed': 777}
+{'epoch': [0, 1], 'loss': [5.8735904693603525, 5.866369342803955], 'time': [2.865035349, 2.882518127], 'acc': [9.765625, 10.0], 'val_loss': [5.867934703826903, 5.865522480010986], 'val_acc': [8.125, 9.53125]}
+Epoch 1/9Epoch 1/9 ETA 2s Step 1/10: loss: 5.864260, acc: 14.062500Epoch 1/9 ETA 2s Step 2/10: loss: 5.865306, acc: 4.687500Epoch 1/9 ETA 1s Step 3/10: loss: 5.864638, acc: 11.718750Epoch 1/9 ETA 1s Step 4/10: loss: 5.866236, acc: 5.468750Epoch 1/9 ETA 1s Step 5/10: loss: 5.864479, acc: 14.843750Epoch 1/9 ETA 1s Step 6/10: loss: 5.864378, acc: 8.593750Epoch 1/9 ETA 1s Step 7/10: loss: 5.864519, acc: 11.718750Epoch 1/9 ETA 0s Step 8/10: loss: 5.864973, acc: 7.812500Epoch 1/9 ETA 0s Step 9/10: loss: 5.864254, acc: 10.937500Epoch 1/9 ETA 0s Step 10/10: loss: 5.863668, acc: 14.062500Epoch 1/9 2.95s Step 10/10: loss: 5.864671, acc: 10.390625, val_loss: 5.864689, val_acc: 10.468750
+{'augmented': True,
+ 'batch_size': 128,
+ 'dataset': 'cifar10',
+ 'lr': 0.1,
+ 'lr_schedule': [[2, 0.01], [10000, 0.001]],
+ 'model': 'small_simple_cnn',
+ 'model_kwargs': {},
+ 'n_epochs': 10,
+ 'reload': True,
+ 'seed': 777}
+{'epoch': [0, 1], 'loss': [5.8735904693603525, 5.866369342803955], 'time': [2.865035349, 2.882518127], 'acc': [9.765625, 10.0], 'val_loss': [5.867934703826903, 5.865522480010986], 'val_acc': [8.125, 9.53125]}
+Epoch 2/9Epoch 2/9 ETA 2s Step 1/10: loss: 5.865034, acc: 10.937500Epoch 2/9 ETA 2s Step 2/10: loss: 5.865467, acc: 10.156250Epoch 2/9 ETA 1s Step 3/10: loss: 5.865011, acc: 11.718750Epoch 2/9 ETA 1s Step 4/10: loss: 5.865160, acc: 10.156250Epoch 2/9 ETA 1s Step 5/10: loss: 5.865191, acc: 10.156250Epoch 2/9 ETA 1s Step 6/10: loss: 5.865333, acc: 10.937500Epoch 2/9 ETA 1s Step 7/10: loss: 5.864703, acc: 10.156250Epoch 2/9 ETA 0s Step 8/10: loss: 5.863960, acc: 7.812500Epoch 2/9 ETA 0s Step 9/10: loss: 5.865469, acc: 14.062500Epoch 2/9 ETA 0s Step 10/10: loss: 5.864788, acc: 11.718750Epoch 2/9 2.86s Step 10/10: loss: 5.865012, acc: 10.781250, val_loss: 5.865406, val_acc: 10.078125
+Epoch 3/9Epoch 3/9 ETA 2s Step 1/10: loss: 5.865007, acc: 12.500000Epoch 3/9 ETA 1s Step 2/10: loss: 5.864537, acc: 13.281250Epoch 3/9 ETA 1s Step 3/10: loss: 5.864214, acc: 10.156250Epoch 3/9 ETA 1s Step 4/10: loss: 5.865790, acc: 12.500000Epoch 3/9 ETA 1s Step 5/10: loss: 5.865487, acc: 5.468750Epoch 3/9 ETA 1s Step 6/10: loss: 5.864959, acc: 11.718750{'augmented': True,
+ 'batch_size': 128,
+ 'dataset': 'cifar10',
+ 'lr': 0.1,
+ 'lr_schedule': [[2, 0.01], [10000, 0.001]],
+ 'model': 'small_simple_cnn',
+ 'model_kwargs': {},
+ 'n_epochs': 10,
+ 'reload': True,
+ 'seed': 777}
+{'epoch': [0, 1, 2], 'loss': [5.8735904693603525, 5.866369342803955, 5.865011548995971], 'time': [2.865035349, 2.882518127, 2.8640564489999996], 'acc': [9.765625, 10.0, 10.78125], 'val_loss': [5.867934703826902, 5.865522480010986, 5.865405559539795], 'val_acc': [8.125, 9.53125, 10.078125]}
+Epoch 3/9Epoch 3/9 ETA 2s Step 1/10: loss: 5.865592, acc: 7.031250Epoch 3/9 ETA 2s Step 2/10: loss: 5.864805, acc: 8.593750Epoch 3/9 ETA 1s Step 3/10: loss: 5.864517, acc: 7.812500Epoch 3/9 ETA 1s Step 4/10: loss: 5.864571, acc: 12.500000Epoch 3/9 ETA 1s Step 5/10: loss: 5.864686, acc: 14.062500Epoch 3/9 ETA 1s Step 6/10: loss: 5.865003, acc: 7.812500Epoch 3/9 ETA 1s Step 7/10: loss: 5.864868, acc: 10.937500Epoch 3/9 ETA 0s Step 8/10: loss: 5.865622, acc: 7.031250Epoch 3/9 ETA 0s Step 9/10: loss: 5.864514, acc: 12.500000Epoch 3/9 ETA 0s Step 10/10: loss: 5.864117, acc: 8.593750Epoch 3/9 2.93s Step 10/10: loss: 5.864829, acc: 9.687500, val_loss: 5.865297, val_acc: 10.312500
+Epoch 4/9Epoch 4/9 ETA 2s Step 1/10: loss: 5.864958, acc: 10.156250Epoch 4/9 ETA 1s Step 2/10: loss: 5.864275, acc: 11.718750Epoch 4/9 ETA 1s Step 3/10: loss: 5.864530, acc: 10.937500Epoch 4/9 ETA 1s Step 4/10: loss: 5.864290, acc: 11.718750Epoch 4/9 ETA 1s Step 5/10: loss: 5.864932, acc: 9.375000Epoch 4/9 ETA 1s Step 6/10: loss: 5.864492, acc: 9.375000Epoch 4/9 ETA 1s Step 7/10: loss: 5.864359, acc: 14.843750Epoch 4/9 ETA 0s Step 8/10: loss: 5.864813, acc: 14.843750Epoch 4/9 ETA 0s Step 9/10: loss: 5.864165, acc: 16.406250Epoch 4/9 ETA 0s Step 10/10: loss: 5.865010, acc: 11.718750Epoch 4/9 3.91s Step 10/10: loss: 5.864582, acc: 12.109375, val_loss: 5.865198, val_acc: 10.156250
+Epoch 5/9Epoch 5/9 ETA 2s Step 1/10: loss: 5.865735, acc: 6.250000Epoch 5/9 ETA 2s Step 2/10: loss: 5.864419, acc: 9.375000Epoch 5/9 ETA 1s Step 3/10: loss: 5.863945, acc: 11.718750Epoch 5/9 ETA 1s Step 4/10: loss: 5.864216, acc: 15.625000Epoch 5/9 ETA 1s Step 5/10: loss: 5.864253, acc: 14.062500Epoch 5/9 ETA 1s Step 6/10: loss: 5.864794, acc: 4.687500Epoch 5/9 ETA 1s Step 7/10: loss: 5.864649, acc: 14.062500Epoch 5/9 ETA 0s Step 8/10: loss: 5.865341, acc: 10.937500Epoch 5/9 ETA 0s Step 9/10: loss: 5.864713, acc: 11.718750Epoch 5/9 ETA 0s Step 10/10: loss: 5.864766, acc: 10.156250Epoch 5/9 3.05s Step 10/10: loss: 5.864683, acc: 10.859375, val_loss: 5.865104, val_acc: 10.234375
+Epoch 6/9Epoch 6/9 ETA 2s Step 1/10: loss: 5.864613, acc: 13.281250Epoch 6/9 ETA 1s Step 2/10: loss: 5.864608, acc: 14.062500Epoch 6/9 ETA 1s Step 3/10: loss: 5.864700, acc: 12.500000Epoch 6/9 ETA 1s Step 4/10: loss: 5.864131, acc: 10.156250Epoch 6/9 ETA 1s Step 5/10: loss: 5.865140, acc: 10.156250Epoch 6/9 ETA 1s Step 6/10: loss: 5.864239, acc: 11.718750Epoch 6/9 ETA 1s Step 7/10: loss: 5.864156, acc: 11.718750Epoch 6/9 ETA 0s Step 8/10: loss: 5.864684, acc: 12.500000Epoch 6/9 ETA 0s Step 9/10: loss: 5.864436, acc: 12.500000Epoch 6/9 ETA 0s Step 10/10: loss: 5.864982, acc: 13.281250Epoch 6/9 3.43s Step 10/10: loss: 5.864569, acc: 12.187500, val_loss: 5.865017, val_acc: 10.312500
+Epoch 7/9Epoch 7/9 ETA 2s Step 1/10: loss: 5.863372, acc: 8.593750Epoch 7/9 ETA 1s Step 2/10: loss: 5.865044, acc: 10.156250Epoch 7/9 ETA 1s Step 3/10: loss: 5.864612, acc: 10.156250Epoch 7/9 ETA 1s Step 4/10: loss: 5.863499, acc: 17.187500Epoch 7/9 ETA 1s Step 5/10: loss: 5.863691, acc: 14.062500Epoch 7/9 ETA 1s Step 6/10: loss: 5.865647, acc: 4.687500Epoch 7/9 ETA 1s Step 7/10: loss: 5.864465, acc: 7.031250Epoch 7/9 ETA 0s Step 8/10: loss: 5.864824, acc: 7.031250Epoch 7/9 ETA 0s Step 9/10: loss: 5.863787, acc: 10.937500Epoch 7/9 ETA 0s Step 10/10: loss: 5.864296, acc: 14.843750Epoch 7/9 3.89s Step 10/10: loss: 5.864324, acc: 10.468750, val_loss: 5.864938, val_acc: 10.546875
+Epoch 8/9Epoch 8/9 ETA 2s Step 1/10: loss: 5.864213, acc: 14.843750Epoch 8/9 ETA 2s Step 2/10: loss: 5.864077, acc: 14.843750Epoch 8/9 ETA 1s Step 3/10: loss: 5.863666, acc: 10.156250Epoch 8/9 ETA 1s Step 4/10: loss: 5.865033, acc: 5.468750Epoch 8/9 ETA 1s Step 5/10: loss: 5.864230, acc: 15.625000Epoch 8/9 ETA 1s Step 6/10: loss: 5.864171, acc: 10.937500Epoch 8/9 ETA 1s Step 7/10: loss: 5.863194, acc: 19.531250Epoch 8/9 ETA 0s Step 8/10: loss: 5.865381, acc: 5.468750Epoch 8/9 ETA 0s Step 9/10: loss: 5.864207, acc: 10.156250Epoch 8/9 ETA 0s Step 10/10: loss: 5.864990, acc: 8.593750Epoch 8/9 2.95s Step 10/10: loss: 5.864316, acc: 11.562500, val_loss: 5.864865, val_acc: 10.859375
+Epoch 9/9Epoch 9/9 ETA 2s Step 1/10: loss: 5.864304, acc: 7.031250Epoch 9/9 ETA 2s Step 2/10: loss: 5.864698, acc: 7.812500Epoch 9/9 ETA 1s Step 3/10: loss: 5.864510, acc: 11.718750Epoch 9/9 ETA 1s Step 4/10: loss: 5.863595, acc: 9.375000Epoch 9/9 ETA 1s Step 5/10: loss: 5.864231, acc: 13.281250Epoch 9/9 ETA 1s Step 6/10: loss: 5.864869, acc: 8.593750Epoch 9/9 ETA 1s Step 7/10: loss: 5.863993, acc: 9.375000Epoch 9/9 ETA 0s Step 8/10: loss: 5.864634, acc: 8.593750Epoch 9/9 ETA 0s Step 9/10: loss: 5.864510, acc: 8.593750Epoch 9/9 ETA 0s Step 10/10: loss: 5.863640, acc: 10.937500Epoch 9/9 3.06s Step 10/10: loss: 5.864298, acc: 9.531250, val_loss: 5.864797, val_acc: 10.703125

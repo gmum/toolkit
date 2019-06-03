@@ -12,7 +12,7 @@ import numpy as np
 import pandas as pd
 import torch
 
-from src.callbacks import ModelCheckpoint, LambdaCallback, History, DumpTensorflowSummaries
+from src.callbacks import ModelCheckpoint, LambdaCallback, History, DumpTensorboardSummaries
 from src.utils import save_weights
 
 logger = logging.getLogger(__name__)
@@ -46,7 +46,7 @@ def _construct_default_callbacks(model, H, save_path, checkpoint_monitor, save_f
 
     callbacks.append(LambdaCallback(on_train_begin=save_weights_fnc))
     if use_tb:
-        callbacks.append(DumpTensorflowSummaries(save_path=save_path))
+        callbacks.append(DumpTensorboardSummaries(save_path=save_path))
     callbacks.append(LambdaCallback(on_epoch_end=partial(_save_loop_state, save_callbacks=custom_callbacks,
         save_path=save_path)))
     return callbacks
@@ -95,7 +95,7 @@ def _append_to_history_csv(epoch, logs, H):
                 H[key].append(value)
 
             # Epoch is 0 first, so 1 key. Etc
-            assert len(H[key]) == epoch + 1, "Len {} = ".format(key) + str(len(H[key]))
+            assert len(H[key]) == epoch + 1, "Len H[{}] is {}, expected {} ".format(key, len(H[key]), epoch+1)
         else:
             pass
 
@@ -105,7 +105,9 @@ def _reload(model, save_path, callbacks):
     history_csv_path = os.path.join(save_path, "history.csv")
 
     if not os.path.exists(model_last_epoch_path) or not os.path.exists(loop_state_path):
-        raise IOError("Failed to find last epoch model or loop state")
+        logger.warning("Failed to find last epoch model or loop state")
+        return {}, 0
+
     # Reload everything (model, optimizer, loop state)
     logger.warning("Reloading weights!")
     checkpoint = torch.load(model_last_epoch_path)
@@ -123,7 +125,7 @@ def _reload(model, save_path, callbacks):
     os.system("cp " + os.path.join(save_path, "history.pkl") + " " + os.path.join(save_path, "history.pkl.bckp"))
 
     # Setup the rest
-    epoch_start = loop_state['epochs_done']  # 0 index
+    epoch_start = loop_state['epochs_done'] + 1
     if not len(H[next(iter(H))]) == loop_state['epochs_done'] + 1:
         raise IOError("Mismatch between saved history and epochs recorded. "
                       "Found len(H)={0} and epoch_start={1} "
@@ -143,6 +145,8 @@ def _reload(model, save_path, callbacks):
     for k in H:
         logger.info((k, len(H)))
         break
+
+    logger.info("epoch_start={}".format(epoch_start))
 
     return H, epoch_start
 
@@ -165,7 +169,7 @@ def training_loop(model, train, valid, n_epochs, save_path, steps_per_epoch, sav
     _ = model.fit_generator(train,
         initial_epoch=epoch_start,
         steps_per_epoch=steps_per_epoch,
-        epochs=n_epochs,
+        epochs=n_epochs - 1, # Weird convention
         verbose=1,
         valid_generator=valid,
         callbacks=callbacks)

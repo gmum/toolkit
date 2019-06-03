@@ -1,0 +1,144 @@
+2019-06-03 14:49:35,175 - src.vegab - INFO - Calling function train
+2019-06-03 14:49:35,384 - root - INFO - Transposing
+2019-06-03 14:49:35,471 - root - INFO - x_train shape:(1280, 3, 32, 32)
+2019-06-03 14:49:35,472 - root - INFO - 1280train samples
+2019-06-03 14:49:35,472 - root - INFO - 1280test samples
+2019-06-03 14:49:35,502 - src.training_loop - WARNING - Failed to find last epoch model or loop state
+2019-06-03 14:49:35,520 - src.training_loop - INFO - Saving model from beginning
+2019-06-03 14:49:35,524 - src.callbacks - INFO - Fix learning rate to 0.01
+/Users/jastrs01/Dropbox/Projekty/toolkit/vanilla_pytorch_project_template/src/models/simple_cnn.py:26: UserWarning: Implicit dimension choice for log_softmax has been deprecated. Change the call to include dim=X as an argument.
+  return F.log_softmax(x)  # TODO: Shoulnt be linear
+2019-06-03 14:49:38,389 - src.training_loop - INFO - epoch=0	loss=5.873590469360352	time=2.8650353490000002	acc=9.765625	val_loss=5.867934703826904	val_acc=8.125	
+2019-06-03 14:49:38,389 - src.training_loop - INFO - Saving history to results/tmp/history.csv
+2019-06-03 14:49:38,392 - src.callbacks - INFO - Saving history to results/tmp/history.pkl
+2019-06-03 14:49:38,394 - src.training_loop - INFO - Saving model from epoch 0
+2019-06-03 14:49:38,396 - src.training_loop - INFO - Saving loop_state.pkl
+2019-06-03 14:49:38,396 - src.training_loop - INFO - Saved loop_state.pkl
+2019-06-03 14:49:38,396 - src.callbacks - INFO - Fix learning rate to 0.01
+2019-06-03 14:49:41,279 - src.training_loop - INFO - epoch=1	loss=5.866369342803955	time=2.882518127	acc=10.0	val_loss=5.865522480010986	val_acc=9.53125	
+2019-06-03 14:49:41,279 - src.training_loop - INFO - Saving history to results/tmp/history.csv
+2019-06-03 14:49:41,281 - src.callbacks - INFO - Saving history to results/tmp/history.pkl
+2019-06-03 14:49:41,282 - src.training_loop - INFO - Saving model from epoch 1
+2019-06-03 14:49:41,283 - src.training_loop - INFO - Saving loop_state.pkl
+2019-06-03 14:49:41,283 - src.training_loop - INFO - Saved loop_state.pkl
+2019-06-03 14:49:41,283 - src.callbacks - INFO - Fix learning rate to 0.001
+2019-06-03 14:49:46,926 - src.vegab - INFO - Calling function train
+2019-06-03 14:49:47,125 - root - INFO - Transposing
+2019-06-03 14:49:47,219 - root - INFO - x_train shape:(1280, 3, 32, 32)
+2019-06-03 14:49:47,219 - root - INFO - 1280train samples
+2019-06-03 14:49:47,219 - root - INFO - 1280test samples
+2019-06-03 14:49:47,253 - src.training_loop - WARNING - Reloading weights!
+2019-06-03 14:49:47,259 - src.training_loop - INFO - Reloading loop state!
+2019-06-03 14:49:47,259 - src.training_loop - INFO - Reloading history!
+2019-06-03 14:49:47,272 - src.training_loop - INFO - Done reloading!
+2019-06-03 14:49:47,298 - src.training_loop - INFO - {'epochs_done': 1, 'callbacks': [<src.callbacks.LRSchedule object at 0xb40038c18>, <src.callbacks.MetaSaver object at 0xb40038898>]}
+2019-06-03 14:49:47,298 - src.training_loop - INFO - ('epoch', 6)
+2019-06-03 14:49:47,298 - src.training_loop - INFO - epoch_start=1
+2019-06-03 14:49:47,323 - src.training_loop - INFO - Saving model from beginning
+2019-06-03 14:49:47,325 - src.callbacks - INFO - Fix learning rate to 0.01
+/Users/jastrs01/Dropbox/Projekty/toolkit/vanilla_pytorch_project_template/src/models/simple_cnn.py:26: UserWarning: Implicit dimension choice for log_softmax has been deprecated. Change the call to include dim=X as an argument.
+  return F.log_softmax(x)  # TODO: Shoulnt be linear
+2019-06-03 14:50:23,599 - src.vegab - INFO - Calling function train
+2019-06-03 14:50:23,805 - root - INFO - Transposing
+2019-06-03 14:50:23,895 - root - INFO - x_train shape:(1280, 3, 32, 32)
+2019-06-03 14:50:23,895 - root - INFO - 1280train samples
+2019-06-03 14:50:23,895 - root - INFO - 1280test samples
+2019-06-03 14:50:23,927 - src.training_loop - WARNING - Reloading weights!
+2019-06-03 14:50:23,930 - src.training_loop - INFO - Reloading loop state!
+2019-06-03 14:50:23,930 - src.training_loop - INFO - Reloading history!
+2019-06-03 14:50:23,934 - src.training_loop - INFO - Done reloading!
+2019-06-03 14:50:23,953 - src.training_loop - INFO - {'epochs_done': 1, 'callbacks': [<src.callbacks.LRSchedule object at 0xb3b85ac18>, <src.callbacks.MetaSaver object at 0xb3b85ab38>]}
+2019-06-03 14:50:23,954 - src.training_loop - INFO - ('epoch', 6)
+2019-06-03 14:50:23,954 - src.training_loop - INFO - epoch_start=1
+2019-06-03 14:50:23,977 - src.training_loop - INFO - Saving model from beginning
+2019-06-03 14:50:23,980 - src.callbacks - INFO - Fix learning rate to 0.01
+/Users/jastrs01/Dropbox/Projekty/toolkit/vanilla_pytorch_project_template/src/models/simple_cnn.py:26: UserWarning: Implicit dimension choice for log_softmax has been deprecated. Change the call to include dim=X as an argument.
+  return F.log_softmax(x)  # TODO: Shoulnt be linear
+2019-06-03 14:50:53,929 - src.vegab - INFO - Calling function train
+2019-06-03 14:50:54,135 - root - INFO - Transposing
+2019-06-03 14:50:54,233 - root - INFO - x_train shape:(1280, 3, 32, 32)
+2019-06-03 14:50:54,233 - root - INFO - 1280train samples
+2019-06-03 14:50:54,233 - root - INFO - 1280test samples
+2019-06-03 14:50:54,270 - src.training_loop - WARNING - Reloading weights!
+2019-06-03 14:50:54,273 - src.training_loop - INFO - Reloading loop state!
+2019-06-03 14:50:54,273 - src.training_loop - INFO - Reloading history!
+2019-06-03 14:50:54,277 - src.training_loop - INFO - Done reloading!
+2019-06-03 14:50:54,304 - src.training_loop - INFO - {'epochs_done': 1, 'callbacks': [<src.callbacks.LRSchedule object at 0xb46ef0c18>, <src.callbacks.MetaSaver object at 0xb46ef0be0>]}
+2019-06-03 14:50:54,304 - src.training_loop - INFO - ('epoch', 6)
+2019-06-03 14:50:54,304 - src.training_loop - INFO - epoch_start=2
+2019-06-03 14:50:54,332 - src.training_loop - INFO - Saving model from beginning
+2019-06-03 14:50:54,334 - src.callbacks - INFO - Fix learning rate to 0.001
+/Users/jastrs01/Dropbox/Projekty/toolkit/vanilla_pytorch_project_template/src/models/simple_cnn.py:26: UserWarning: Implicit dimension choice for log_softmax has been deprecated. Change the call to include dim=X as an argument.
+  return F.log_softmax(x)  # TODO: Shoulnt be linear
+2019-06-03 14:50:57,199 - src.training_loop - INFO - epoch=2	loss=5.865011548995971	time=2.864056449	acc=10.78125	val_loss=5.865405559539795	val_acc=10.078125	
+2019-06-03 14:50:57,199 - src.training_loop - INFO - Saving history to results/tmp/history.csv
+2019-06-03 14:50:57,201 - src.callbacks - INFO - Saving history to results/tmp/history.pkl
+2019-06-03 14:50:57,202 - src.training_loop - INFO - Saving model from epoch 2
+2019-06-03 14:50:57,204 - src.training_loop - INFO - Saving loop_state.pkl
+2019-06-03 14:50:57,204 - src.training_loop - INFO - Saved loop_state.pkl
+2019-06-03 14:50:57,204 - src.callbacks - INFO - Fix learning rate to 0.001
+2019-06-03 14:51:01,376 - src.vegab - INFO - Calling function train
+2019-06-03 14:51:01,579 - root - INFO - Transposing
+2019-06-03 14:51:01,665 - root - INFO - x_train shape:(1280, 3, 32, 32)
+2019-06-03 14:51:01,665 - root - INFO - 1280train samples
+2019-06-03 14:51:01,665 - root - INFO - 1280test samples
+2019-06-03 14:51:01,694 - src.training_loop - WARNING - Reloading weights!
+2019-06-03 14:51:01,697 - src.training_loop - INFO - Reloading loop state!
+2019-06-03 14:51:01,697 - src.training_loop - INFO - Reloading history!
+2019-06-03 14:51:01,702 - src.training_loop - INFO - Done reloading!
+2019-06-03 14:51:01,726 - src.training_loop - INFO - {'epochs_done': 2, 'callbacks': [<src.callbacks.LRSchedule object at 0xb3b59ccc0>, <src.callbacks.MetaSaver object at 0xb3b59c7f0>]}
+2019-06-03 14:51:01,726 - src.training_loop - INFO - ('epoch', 6)
+2019-06-03 14:51:01,726 - src.training_loop - INFO - epoch_start=3
+2019-06-03 14:51:01,760 - src.training_loop - INFO - Saving model from beginning
+2019-06-03 14:51:01,762 - src.callbacks - INFO - Fix learning rate to 0.001
+/Users/jastrs01/Dropbox/Projekty/toolkit/vanilla_pytorch_project_template/src/models/simple_cnn.py:26: UserWarning: Implicit dimension choice for log_softmax has been deprecated. Change the call to include dim=X as an argument.
+  return F.log_softmax(x)  # TODO: Shoulnt be linear
+2019-06-03 14:51:04,688 - src.training_loop - INFO - epoch=3	loss=5.864829206466675	time=2.926285078	acc=9.6875	val_loss=5.865297460556031	val_acc=10.3125	
+2019-06-03 14:51:04,689 - src.training_loop - INFO - Saving history to results/tmp/history.csv
+2019-06-03 14:51:04,691 - src.callbacks - INFO - Saving history to results/tmp/history.pkl
+2019-06-03 14:51:04,692 - src.training_loop - INFO - Saving model from epoch 3
+2019-06-03 14:51:04,693 - src.training_loop - INFO - Saving loop_state.pkl
+2019-06-03 14:51:04,694 - src.training_loop - INFO - Saved loop_state.pkl
+2019-06-03 14:51:04,694 - src.callbacks - INFO - Fix learning rate to 0.001
+2019-06-03 14:51:08,602 - src.training_loop - INFO - epoch=4	loss=5.864582347869873	time=3.9075538529999996	acc=12.109375	val_loss=5.865198373794556	val_acc=10.15625	
+2019-06-03 14:51:08,602 - src.training_loop - INFO - Saving history to results/tmp/history.csv
+2019-06-03 14:51:08,611 - src.callbacks - INFO - Saving history to results/tmp/history.pkl
+2019-06-03 14:51:08,613 - src.training_loop - INFO - Saving model from epoch 4
+2019-06-03 14:51:08,615 - src.training_loop - INFO - Saving loop_state.pkl
+2019-06-03 14:51:08,616 - src.training_loop - INFO - Saved loop_state.pkl
+2019-06-03 14:51:08,616 - src.callbacks - INFO - Fix learning rate to 0.001
+2019-06-03 14:51:11,670 - src.training_loop - INFO - epoch=5	loss=5.8646831035614015	time=3.0537514859999995	acc=10.859375	val_loss=5.865104341506958	val_acc=10.234375	
+2019-06-03 14:51:11,670 - src.training_loop - INFO - Saving history to results/tmp/history.csv
+2019-06-03 14:51:11,673 - src.callbacks - INFO - Saving history to results/tmp/history.pkl
+2019-06-03 14:51:11,673 - src.training_loop - INFO - Saving model from epoch 5
+2019-06-03 14:51:11,674 - src.training_loop - INFO - Saving loop_state.pkl
+2019-06-03 14:51:11,675 - src.training_loop - INFO - Saved loop_state.pkl
+2019-06-03 14:51:11,675 - src.callbacks - INFO - Fix learning rate to 0.001
+2019-06-03 14:51:15,102 - src.training_loop - INFO - epoch=6	loss=5.864569044113159	time=3.4267713850000003	acc=12.1875	val_loss=5.865017080307007	val_acc=10.3125	
+2019-06-03 14:51:15,102 - src.training_loop - INFO - Saving history to results/tmp/history.csv
+2019-06-03 14:51:15,105 - src.callbacks - INFO - Saving history to results/tmp/history.pkl
+2019-06-03 14:51:15,105 - src.training_loop - INFO - Saving model from epoch 6
+2019-06-03 14:51:15,106 - src.training_loop - INFO - Saving loop_state.pkl
+2019-06-03 14:51:15,107 - src.training_loop - INFO - Saved loop_state.pkl
+2019-06-03 14:51:15,107 - src.callbacks - INFO - Fix learning rate to 0.001
+2019-06-03 14:51:18,998 - src.training_loop - INFO - epoch=7	loss=5.864323711395263	time=3.8908565999999993	acc=10.46875	val_loss=5.864937782287598	val_acc=10.546875	
+2019-06-03 14:51:18,998 - src.training_loop - INFO - Saving history to results/tmp/history.csv
+2019-06-03 14:51:19,000 - src.callbacks - INFO - Saving history to results/tmp/history.pkl
+2019-06-03 14:51:19,002 - src.training_loop - INFO - Saving model from epoch 7
+2019-06-03 14:51:19,003 - src.training_loop - INFO - Saving loop_state.pkl
+2019-06-03 14:51:19,003 - src.training_loop - INFO - Saved loop_state.pkl
+2019-06-03 14:51:19,003 - src.callbacks - INFO - Fix learning rate to 0.001
+2019-06-03 14:51:21,959 - src.training_loop - INFO - epoch=8	loss=5.864316129684449	time=2.954915890999999	acc=11.5625	val_loss=5.864864921569824	val_acc=10.859375	
+2019-06-03 14:51:21,959 - src.training_loop - INFO - Saving history to results/tmp/history.csv
+2019-06-03 14:51:21,961 - src.callbacks - INFO - Saving history to results/tmp/history.pkl
+2019-06-03 14:51:21,962 - src.training_loop - INFO - Saving model from epoch 8
+2019-06-03 14:51:21,963 - src.training_loop - INFO - Saving loop_state.pkl
+2019-06-03 14:51:21,963 - src.training_loop - INFO - Saved loop_state.pkl
+2019-06-03 14:51:21,964 - src.callbacks - INFO - Fix learning rate to 0.001
+2019-06-03 14:51:25,028 - src.training_loop - INFO - epoch=9	loss=5.864298391342163	time=3.0639583560000005	acc=9.53125	val_loss=5.864797210693359	val_acc=10.703125	
+2019-06-03 14:51:25,028 - src.training_loop - INFO - Saving history to results/tmp/history.csv
+2019-06-03 14:51:25,030 - src.callbacks - INFO - Saving history to results/tmp/history.pkl
+2019-06-03 14:51:25,030 - src.training_loop - INFO - Saving model from epoch 9
+2019-06-03 14:51:25,031 - src.training_loop - INFO - Saving loop_state.pkl
+2019-06-03 14:51:25,032 - src.training_loop - INFO - Saved loop_state.pkl
+2019-06-03 14:51:25,064 - src.vegab - INFO - Finished train
