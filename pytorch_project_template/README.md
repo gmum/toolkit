@@ -56,11 +56,11 @@ Do you have other ideas? Please open an issue and let's discuss. Here are ours:
 
 * Each experiment should be as self-contained as possible, e.g. include runner, plotting utilities, etc. 
 
-    - See `tune_lr` for an example. 
+    - See `experiments/tune_lr` for an example. 
     
 * Test everything easily testable
    
-    - We have asserts sprinkled in few places in code, but as many as we should.
+    - We have asserts sprinkled across the code, but probably not as many as we should.
     
 
 ## Tutorial: single training
@@ -75,15 +75,13 @@ Take the following steps:
 
 4. Run ``tensorboard --logdir=save_to_folder`` to visualize the learning curves.
 
-Configuration is done using gin. This allows for a flexible configuration of training. For instance, to continue training for more epochs: ``bin/train.py save_to_folder configs/cnn.gin -b="training_loop.n_epochs=5;training_loop.reload=True"``.
+Configuration is done using gin. This allows for a flexible configuration of training. For instance, to continue training for more epochs you can run: ``bin/train.py save_to_folder configs/cnn.gin -b="training_loop.n_epochs=5;training_loop.reload=True"``.
 
 Note: training won't reach sensible accuracies. This is on purpose so that the demonstration works on small machines. For a bit more realistic training configuration see `configs/cnn_full.gin`.
 
 ## Tutorial: experiment example
 
 Experiment conceptually is a list of shell jobs. For convenience this can be wrapped using a python script that prepares jobs, analyses the runs, stores configs, etc. 
-
-Bonus for OSX users: To enable plotting in iterms ``pip install itermplot``, and uncomment appropriate line in ``e.sh```.
 
 We ship an example experiment, where we tune LR for the small CNN on Cifar10. Here is the typical workflow:
 
@@ -95,7 +93,8 @@ We ship an example experiment, where we tune LR for the small CNN on Cifar10. He
 
 4. See runs: `ls $RESULTS_DIR/tune_lr/large`
 
-5. Process experiment results: `python experiments/tune_lr/main.py report`
+5. Process experiment results: `python experiments/tune_lr/main.py report`. Bonus for OSX users: To enable plotting in iterm install ``pip install itermplot``, and uncomment the appropriate line in ``e.sh```.
+
 
 6. Take a look at the main.py source code to understand better the logic.
 
