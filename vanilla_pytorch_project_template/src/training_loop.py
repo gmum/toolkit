@@ -40,12 +40,6 @@ def _construct_default_callbacks(model, optimizer, H, save_path, checkpoint_moni
 
         callbacks.append(LambdaCallback(on_epoch_end=save_weights_fnc))
 
-    # Always save from first epoch
-    def save_weights_fnc(logs=None):
-        logger.info("Saving model from beginning")
-        save_weights(model, optimizer, os.path.join(save_path, "init_weights.pt"))
-
-    callbacks.append(LambdaCallback(on_train_begin=save_weights_fnc))
     if use_tb:
         callbacks.append(DumpTensorboardSummaries())
     callbacks.append(LambdaCallback(on_epoch_end=partial(_save_loop_state, save_callbacks=custom_callbacks,
@@ -161,6 +155,8 @@ def training_loop(model, loss_function, metrics, optimizer, meta_data, config, s
     if reload:
         H, epoch_start = _reload(model, optimizer, save_path, callbacks)
     else:
+        save_weights(model, optimizer, os.path.join(save_path, "init_weights.pt"))
+
         history_csv_path, history_pkl_path = os.path.join(save_path, "history.csv"), os.path.join(save_path,
                                                                                                   "history.pkl")
         logger.info("Removing {} and {}".format(history_pkl_path, history_csv_path))

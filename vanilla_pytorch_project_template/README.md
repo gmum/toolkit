@@ -75,7 +75,7 @@ Take the following steps:
 
 4. Run ``tensorboard --tb=save_to_folder`` to visualize the learning curves.
 
-5. Continue training for more epochs: ``bin/train.py save_to_folder configs/cnn.gin -b="training_loop.n_epochs=5;training_loop.reload=True"``.
+Configuration is done using gin. This allows for a flexible configuration of training. For instance, to continue training for more epochs: ``bin/train.py save_to_folder configs/cnn.gin -b="training_loop.n_epochs=5;training_loop.reload=True"``.
 
 ## Tutorial: experiment
 

@@ -9,12 +9,10 @@
 * [OK] Remove vegab 
 * [OK] Add dataset resolution pattern
 * [OK] Refactor to minimal PyToune dependence
-* Fix bug with calling on_train_begin always
+* [OK] Fix bug with calling on_train_begin always
 * Add experiment builder example
     - main.py run --config=default
     - main.py visualize --config=default
-* Prepare few slides for the next group meeting
 * Test on lab machines
-* Update README.md. Describe what is gin.
 * Add support for iterm
-* Check other practices
+* Revisit other practices

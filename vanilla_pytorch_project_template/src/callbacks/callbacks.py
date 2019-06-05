@@ -333,7 +333,7 @@ class MetaSaver(Callback):
         cmd = "python " + " ".join(sys.argv)
         self.meta = {"cmd": cmd,
                      "save_path": self.save_path,
-                     "start_utc_date": utc_date,
+                     "most_recent_train_start_date": utc_date,
                      "execution_time": -time_start}
 
         with open(os.path.join(self.save_path, "config.txt"), "w") as f:
