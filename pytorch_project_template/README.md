@@ -21,7 +21,7 @@ This repo also ships with:
 * An example experiment in `experiments/tune_lr`
 * Environment configuration 
 
-In the rest of this document we walk through all key design principles and how we realize them. Finally, there is a quick tutorial.
+In the rest of this document we walk through all the key design principles and how we implement them. Finally, there is a quick tutorial.
 
 ## Good practices 
 
