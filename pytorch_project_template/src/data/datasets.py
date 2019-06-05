@@ -36,8 +36,8 @@ def cifar(which=10, preprocessing="center", seed=777, use_valid=True):
     # Minor conversions
     x_train = x_train.astype("float32")
     x_test = x_test.astype("float32")
-    y_train = np_utils.to_categorical(y_train)
-    y_test = np_utils.to_categorical(y_test)
+    y_train = y_train.astype("long").reshape(-1,)
+    y_test = y_test.astype("long").reshape(-1,)
 
     # Always outputs channels first
     if x_train.shape[-1] == 3:
@@ -96,7 +96,6 @@ def cifar(which=10, preprocessing="center", seed=777, use_valid=True):
     w, h, c = train[0].shape[1:4]
     meta_data['input_dim'] = (w, h, c)
     meta_data['preprocessing'] = meta_preprocessing
-    meta_data['n_classes'] = y_train.shape[1]
 
     if use_valid:
         return train, valid, test, meta_data
@@ -132,8 +131,8 @@ def mnist(which="fmnist", preprocessing="01", seed=777, use_valid=True):
     else:
         raise NotImplementedError()
 
-    y_train = np_utils.to_categorical(y_train)
-    y_test = np_utils.to_categorical(y_test)
+    y_train = y_train.astype("long").reshape(-1,)
+    y_test = y_test.astype("long").reshape(-1,)
 
     # Permute
     ids_train = rng.choice(len(x_train), len(x_train), replace=False)

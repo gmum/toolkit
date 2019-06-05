@@ -37,7 +37,7 @@ logger = logging.getLogger(__name__)
 
 def acc(y_pred, y_true):
     _, y_pred = y_pred.max(1)
-    _, y_true = y_true.max(1)
+    # _, y_true = y_true.max(1)
     acc_pred = (y_pred == y_true).float().mean()
     return acc_pred * 100
 

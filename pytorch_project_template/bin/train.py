@@ -29,7 +29,7 @@ def train(save_path, model, lr=0.1, batch_size=128, callbacks=[]):
     # Create dynamically model
     model = models.__dict__[model]()
     summary(model)
-    loss_function = torch.nn.MSELoss()
+    loss_function = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=lr)
 
     # Create dynamically callbacks

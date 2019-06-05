@@ -16,7 +16,6 @@ logger = logging.getLogger(__name__)
 @gin.configurable
 def get_dataset(dataset, n_examples, data_seed, batch_size):
     train, valid, test, meta_data = globals()[dataset](seed=data_seed)
-    n_classes = meta_data['n_classes']
 
     if n_examples > 0:
         assert len(train[0]) >= n_examples
@@ -25,11 +24,6 @@ def get_dataset(dataset, n_examples, data_seed, batch_size):
     # Configure stream + optionally augmentation
     meta_data['x_train'] = train[0]
     meta_data['y_train'] = train[1]
-
-    if len(valid[1].shape) == 2:
-        assert valid[1].shape[1] == n_classes
-        assert test[1].shape[1] == n_classes
-        assert train[1].shape[1] == n_classes
 
     train_stream = DatasetGenerator(train, seed=data_seed, batch_size=batch_size, shuffle=True)
 

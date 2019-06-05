@@ -100,7 +100,7 @@ class LRSchedule(Callback):
                 break
         for group in self.optimizer.param_groups:
             group['lr'] = v * self.base_lr
-        logger.info("Fix learning rate to {}".format(v))
+        logger.info("Fix learning rate to {}".format(v * self.base_lr))
 
 
 class History(Callback):
