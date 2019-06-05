@@ -22,8 +22,8 @@ def _to_gen_with_shuffling(dataset, batch_size, seed):
             yield dataset[0][id * batch_size:(id + 1) * batch_size], dataset[1][id * batch_size:(id + 1) * batch_size]
 
 
-def get_cifar(dataset="cifar10", data_format="channels_first", augmented=False,
-              batch_size=128, preprocessing="center", seed=777, n_examples=1280):
+def cifar(dataset="cifar10", data_format="channels_first", augmented=False,
+          batch_size=128, preprocessing="center", seed=777, n_examples=1280):
     """
     Returns train iterator and test X, y.
     """
@@ -46,7 +46,7 @@ def get_cifar(dataset="cifar10", data_format="channels_first", augmented=False,
         std = np.std(x_train)
         x_train = (x_train - mean) / std
         x_test = (x_test - mean) / std
-    elif preprocessing == "01": # Required by scatnet
+    elif preprocessing == "01":
         x_train = x_train / 255.0
         x_test = x_test / 255.0
     else:

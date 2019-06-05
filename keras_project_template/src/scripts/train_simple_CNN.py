@@ -9,15 +9,15 @@ Run like: python src/scripts/train_simple_CNN.py cifar10 results/test_run
 from keras.optimizers import SGD
 
 from src.configs.simple_CNN import simple_CNN_configs
-from src.data import get_cifar
+from src.data import cifar
 from src.models import build_simple_model
 from src.training_loop import cifar_training_loop
 from src.vegab import main, MetaSaver, AutomaticNamer
 
 def train(config, save_path):
     # Load data
-    train, test, _ = get_cifar(dataset=config['dataset'], batch_size=config['batch_size'],
-        augmented=config['augmented'], preprocessing='center')
+    train, test, _ = cifar(dataset=config['dataset'], batch_size=config['batch_size'],
+                           augmented=config['augmented'], preprocessing='center')
 
     # Load model
 

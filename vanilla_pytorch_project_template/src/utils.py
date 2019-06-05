@@ -24,9 +24,14 @@ import atexit
 import json
 import inspect
 
+import argh
+import gin
+from gin.config import _OPERATIVE_CONFIG
+
 import torch
 from torch.nn.modules.module import _addindent
 
+logger = logging.getLogger(__name__)
 
 def acc(y_pred, y_true):
     _, y_pred = y_pred.max(1)
@@ -86,6 +91,18 @@ def replace_standard_stream(stream_name, file_):
     finally:
         setattr(sys, stream_name, stream)
 
+def gin_wrap(fnc):
+    def main(save_path, config, bindings=""):
+        # You can pass many configs (think of them as mixins), and many bindings. Both ";" separated.
+        gin.parse_config_files_and_bindings(config.split(";"), bindings.replace(";", "\n"))
+        print(_OPERATIVE_CONFIG)
+        if not os.path.exists(save_path):
+            logger.info("Creating folder " + save_path)
+            os.system("mkdir -p " + save_path)
+        run_with_redirection(os.path.join(save_path, "stdout_my.txt"),
+                             os.path.join(save_path, "stderr_my.txt"),
+                             fnc(save_path))
+    argh.dispatch_command(main)
 
 def run_with_redirection(stdout_path, stderr_path, func):
     def func_wrapper(*args, **kwargs):

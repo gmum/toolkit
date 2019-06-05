@@ -8,6 +8,7 @@ import tensorflow
 
 from src.utils import save_weights
 
+import gin
 import sys
 import numpy as np
 import os
@@ -16,6 +17,8 @@ import logging
 import time
 import datetime
 import json
+
+from gin.config import _OPERATIVE_CONFIG
 
 logger = logging.getLogger(__name__)
 
@@ -60,9 +63,11 @@ class Callback(object):
         pass
 
 
+@gin.configurable
 class LRSchedule(Callback):
-    def __init__(self, schedule):
+    def __init__(self, base_lr, schedule):
         self.schedule = schedule
+        self.base_lr = base_lr
         super(LRSchedule, self).__init__()
 
     def on_epoch_begin(self, epoch, logs):
@@ -71,7 +76,7 @@ class LRSchedule(Callback):
             if epoch < e:
                 break
         for group in self.model.optimizer.param_groups:
-            group['lr'] = v
+            group['lr'] = v * self.base_lr
         logger.info("Fix learning rate to {}".format(v))
 
 
@@ -291,6 +296,7 @@ class DumpTensorboardSummaries(Callback):
             summary, epoch)
 
 
+@gin.configurable
 class MetaSaver(Callback):
     def __init__(self, force_train=False):
         self.force_train = force_train
@@ -312,8 +318,13 @@ class MetaSaver(Callback):
                      "start_utc_date": utc_date,
                      "execution_time": -time_start}
 
-        json.dump(self.config, open(os.path.join(self.save_path, "config.json"), "w"), indent=4)
+        with open(os.path.join(self.save_path, "config.txt"), "w") as f:
+            f.write(str(self.config))
         json.dump(self.meta, open(os.path.join(self.save_path, "meta.json"), "w"), indent=4)
+
+        # Copy gin config used, for reference, to the save folder
+        gin_path = sys.argv[2]
+        os.system("cp {} {}".format(gin_path, self.save_path))
 
     def on_train_end(self, logs=None):
         self.meta['execution_time'] += time.time()

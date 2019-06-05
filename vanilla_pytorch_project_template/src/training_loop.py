@@ -8,31 +8,13 @@ import os
 import pickle
 from functools import partial
 
-import traceback
-import logging
-import argparse
-import optparse
-import datetime
-import sys
-import pprint
-import types
-import time
-import copy
-import subprocess
-import glob
-from collections import OrderedDict
-import os
-import signal
-import atexit
-import json
-import inspect
-
 import numpy as np
 import pandas as pd
 import torch
+import gin
 
 from src.callbacks.callbacks import ModelCheckpoint, LambdaCallback, History, DumpTensorboardSummaries
-from src.utils import save_weights, run_with_redirection
+from src.utils import save_weights
 
 logger = logging.getLogger(__name__)
 
@@ -175,14 +157,11 @@ def _training_loop(model, **kwargs):
     model.fit_generator(**kwargs)
 
 
+@gin.configurable
 def training_loop(model, meta_data, config, save_path, train, valid, steps_per_epoch,
-                custom_callbacks=[], checkpoint_monitor="val_acc", use_tb=False):
+                custom_callbacks=[], checkpoint_monitor="val_acc", use_tb=False, reload=False,
+                  n_epochs=100, save_freq=1, save_history_every_k_examples=-1):
     callbacks = list(custom_callbacks)
-
-    reload = config['reload']
-    n_epochs = config['n_epochs']
-    save_freq = config['save_freq']
-    save_history_every_k_examples = config['save_history_every_k_examples']
 
     if reload:
         H, epoch_start = _reload(model, save_path, callbacks)

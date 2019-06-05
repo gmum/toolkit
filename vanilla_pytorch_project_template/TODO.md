@@ -5,7 +5,7 @@
 * [OK] Check if finished. Does resetting work?
 * [OK] Add callback resolution poattern
 * [OK] Per batch callback & test. Test history
-* Add gin
+* [OK] Add gin
 * Add dataset resolution pattern
 * Remove vegab 
 * Remove tensorboard (replace with tensorboardx) and keras (replace dataset loading)
@@ -14,6 +14,9 @@
 * Add my own, minimal, training loop
 * Remove PyToune (or not)
 * Add experiment builder example
-* Prepare few slides for next group meeting
-* Test on machines
-* Update README.md
+    - main.py run --config=default
+    - main.py visualize --config=default
+* Prepare few slides for the next group meeting
+* Test on lab machines
+* Update README.md. Describe what is gin.
+* Add support for iterm

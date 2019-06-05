@@ -3,6 +3,6 @@
 Models used in the project
 """
 
-from .lenet import *
-from .simple_cnn import *
+from .lenet import LeNet
+from .simple_cnn import SimpleCNN
 
