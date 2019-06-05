@@ -4,7 +4,7 @@ A collection of *standalone* useful codes for ML project.
 
 Right now it includes:
 
-* **vanilla_pytorch_project_template** - template for a ML project based on vanilla pytorch. Last updated 06.2019
+* **vpytorch_project_template** - template for a ML project based on pytorch. Last updated 06.2019
 
 * **keras_project_template** - template for a ML project based on keras. Last updated 04.2018.
 
