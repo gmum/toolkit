@@ -56,6 +56,10 @@ Do you have other ideas? Please open an issue and let's discuss. Here are ours:
 
     - See `tune_lr` for an example. 
     
+* Test everything easily testable
+   
+    - We have asserts sprinkled in few places in code, but as many as we should.
+    
 
 ## Tutorial: single train
 

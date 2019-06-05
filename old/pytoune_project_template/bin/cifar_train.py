@@ -10,7 +10,7 @@ Run like:
 """
 
 from src.configs import cifar_train_configs
-from src.data import cifar
+from src.data import datasets
 from src import models
 from src.training_loop import training_loop
 from src.callbacks.callbacks import LRSchedule
@@ -24,8 +24,8 @@ import logging
 logger = logging.getLogger(__name__)
 
 def train(config, save_path):
-    train, test, meta_data = cifar(dataset=config['dataset'], batch_size=config['batch_size'],
-                                   augmented=config['augmented'], preprocessing='center', seed=config['seed'])
+    train, test, meta_data = datasets(dataset=config['dataset'], batch_size=config['batch_size'],
+                                      augmented=config['augmented'], preprocessing='center', seed=config['seed'])
 
     pytorch_model_builder = models.__dict__[config['model']]
     pytorch_model = pytorch_model_builder(**config.get('model_kwargs', {}))
