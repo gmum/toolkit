@@ -5,7 +5,7 @@ Trainer script. Example run command: bin/train.py save_to_folder configs/cnn.gin
 """
 
 import gin
-from gin.config import _OPERATIVE_CONFIG
+from gin.config import _CONFIG
 import torch
 import logging
 logger = logging.getLogger(__name__)
@@ -38,7 +38,7 @@ def train(save_path, model, lr=0.1, batch_size=128, callbacks=[]):
     steps_per_epoch = (len(meta_data['x_train']) - 1) // batch_size + 1
     training_loop(model=model, optimizer=optimizer, loss_function=loss_function, metrics=[acc],
                   train=train, valid=test, meta_data=meta_data, steps_per_epoch=steps_per_epoch,
-                  save_path=save_path, config=_OPERATIVE_CONFIG,
+                  save_path=save_path, config=_CONFIG,
                   use_tb=True, custom_callbacks=callbacks_constructed)
 
 
