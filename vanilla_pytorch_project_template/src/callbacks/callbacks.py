@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Callback implementation (inspired by Keras).
+Callbacks implementation. Inspired by Keras.
 """
 
 # NOTE(kudkudak): There is no (yet) standalone tensorboard, and I don't think it makes sense to use tensorboardX

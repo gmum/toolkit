@@ -10,8 +10,6 @@
 * [OK] Add dataset resolution pattern
 * [OK] Refactor to minimal PyToune dependence
 * Fix bug with calling on_train_begin always
-* Add my own, minimal, training loop
-* Remove PyToune (or not)
 * Add experiment builder example
     - main.py run --config=default
     - main.py visualize --config=default

@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-Generic high quality training loop
+A gorgeous, self-contained, training loop. Uses Poutyne implementation, but this can be swapped later.
 """
 
 import logging
 import os
+import tqdm
 import pickle
 from functools import partial
 
@@ -59,11 +60,11 @@ def _save_loop_state(epoch, logs, save_path, save_callbacks):
 
     ## A small hack to pickle callbacks ##
     if len(save_callbacks):
-        m, opt, md = save_callbacks[0].get_model(),save_callbacks[0].get_optimizer(), save_callbacks[0].get_meta_data()
+        m, opt, md = save_callbacks[0].get_model(), save_callbacks[0].get_optimizer(), save_callbacks[0].get_meta_data()
         for c in save_callbacks:
-            c.set_model(None, ignore=False) # TODO: Remove
+            c.set_model(None, ignore=False)  # TODO: Remove
             c.set_optimizer(None)
-            c.set_params(None) # TODO: Remove
+            c.set_params(None)  # TODO: Remove
             c.set_meta_data(None)
     pickle.dump(loop_state, open(os.path.join(save_path, "loop_state.pkl"), "wb"))
     if len(save_callbacks):
@@ -151,15 +152,10 @@ def _reload(model, optimizer, save_path, callbacks):
     return H, epoch_start
 
 
-def _training_loop(model, **kwargs):
-    model.fit_generator(**kwargs)
-
-
 @gin.configurable
 def training_loop(model, loss_function, metrics, optimizer, meta_data, config, save_path, train, valid, steps_per_epoch,
-                custom_callbacks=[], checkpoint_monitor="val_acc", use_tb=False, reload=True,
+                  custom_callbacks=[], checkpoint_monitor="val_acc", use_tb=False, reload=True,
                   n_epochs=100, save_freq=1, save_history_every_k_examples=-1):
-
     callbacks = list(custom_callbacks)
 
     if reload:
@@ -179,7 +175,7 @@ def training_loop(model, loss_function, metrics, optimizer, meta_data, config, s
     # Configure callbacks
     for clbk in callbacks:
         clbk.set_save_path(save_path)
-        clbk.set_model(model, ignore=False) # TODO: Remove this trick
+        clbk.set_model(model, ignore=False)  # TODO: Remove this trick
         clbk.set_optimizer(optimizer)
         clbk.set_meta_data(meta_data)
         clbk.set_config(config)
