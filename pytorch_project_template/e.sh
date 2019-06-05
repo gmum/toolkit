@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-export PNAME="vanilla_pytorch_project_template"
+export PNAME="pytorch_project_template"
 export ROOT="$( cd "$(dirname "$0")" ; pwd -P )"
 echo "Welcome to $PNAME rooted at $ROOT"
 echo "-"
