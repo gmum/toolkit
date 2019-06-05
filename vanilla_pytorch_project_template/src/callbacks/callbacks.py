@@ -35,11 +35,34 @@ class Callback(object):
     def set_save_path(self, save_path):
         self.save_path = save_path
 
+    def set_optimizer(self, optimizer):
+        self.optimizer = optimizer
+
+    def set_model(self, model, ignore=True):
+        if ignore:
+            return
+        self.model = model
+
     def set_params(self, params):
         self.params = params
 
-    def set_model(self, model):
-        self.model = model
+    def get_config(self):
+        return self.config
+
+    def get_meta_data(self):
+        return self.meta_data
+
+    def get_optimizer(self):
+        return self.optimizer
+
+    def get_params(self):
+        return self.params
+
+    def get_model(self):
+        return self.model
+
+    def get_save_path(self):
+        return self.save_path
 
     def on_epoch_begin(self, epoch, logs):
         pass
@@ -75,7 +98,7 @@ class LRSchedule(Callback):
         for e, v in self.schedule:
             if epoch < e:
                 break
-        for group in self.model.optimizer.param_groups:
+        for group in self.optimizer.param_groups:
             group['lr'] = v * self.base_lr
         logger.info("Fix learning rate to {}".format(v))
 
@@ -125,15 +148,13 @@ class History(Callback):
 
 
 class ModelCheckpoint(Callback):
-    def __init__(self, filepath, model, optimizer, monitor='val_loss', verbose=0,
+    def __init__(self, filepath, monitor='val_loss', verbose=0,
                  save_best_only=False,
                  mode='auto', period=1):
         super(ModelCheckpoint, self).__init__()
         self.monitor = monitor
-        self.optimizer = optimizer
         self.verbose = verbose
         self.filepath = filepath
-        self.model = model
         self.save_best_only = save_best_only
         self.period = period
         self.epochs_since_last_save = 0
@@ -184,7 +205,7 @@ class ModelCheckpoint(Callback):
                                   % (epoch, self.monitor, self.best,
                                      current, self.filepath))
                         self.best = current
-                        save_weights(self.model.model, self.optimizer, self.filepath)
+                        save_weights(self.model, self.optimizer, self.filepath)
                     else:
                         if self.verbose > 0:
                             print('Epoch %05d: %s did not improve' %
@@ -192,7 +213,7 @@ class ModelCheckpoint(Callback):
             else:
                 if self.verbose > 0:
                     print('Epoch %05d: saving model to %s' % (epoch, self.filepath))
-                    save_weights(self.model.model, self.optimizer, self.filepath)
+                    save_weights(self.model, self.optimizer, self.filepath)
 
 
 class LambdaCallback(Callback):
@@ -298,14 +319,11 @@ class DumpTensorboardSummaries(Callback):
 
 @gin.configurable
 class MetaSaver(Callback):
-    def __init__(self, force_train=False):
-        self.force_train = force_train
+    def __init__(self):
         super(MetaSaver, self).__init__()
 
     def on_train_begin(self, logs=None):
-        if os.path.exists(os.path.join(self.save_path, "FINISHED")) and not self.force_train:
-            logger.info("Finished training. Exiting. Remove FINISHED file if you want to train anyways.")
-            exit(0)
+        logger.info("Saving meta data information from the beginning of training")
 
         assert os.system("cp {} {}".format(sys.argv[0], self.save_path)) == 0, "Failed to execute cp of source script"
 

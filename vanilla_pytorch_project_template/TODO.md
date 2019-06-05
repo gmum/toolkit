@@ -6,11 +6,10 @@
 * [OK] Add callback resolution poattern
 * [OK] Per batch callback & test. Test history
 * [OK] Add gin
-* Add dataset resolution pattern
-* Remove vegab 
-* Remove tensorboard (replace with tensorboardx) and keras (replace dataset loading)
-    - trainset = torchvision.datasets.CIFAR10(root='./data', train=True,
-                                        download=True
+* [OK] Remove vegab 
+* [OK] Add dataset resolution pattern
+* [OK] Refactor to minimal PyToune dependence
+* Fix bug with calling on_train_begin always
 * Add my own, minimal, training loop
 * Remove PyToune (or not)
 * Add experiment builder example
@@ -20,3 +19,4 @@
 * Test on lab machines
 * Update README.md. Describe what is gin.
 * Add support for iterm
+* Check other practices

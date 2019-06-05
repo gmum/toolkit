@@ -9,12 +9,12 @@ import logging
 import numpy as np
 
 from .datasets import cifar, mnist
-from .stream import to_stream
+from .streams import DatasetGenerator
 
 logger = logging.getLogger(__name__)
 
 @gin.configurable
-def get_dataset(dataset, n_examples, augmentation, data_seed, batch_size):
+def get_dataset(dataset, n_examples, data_seed, batch_size):
     train, valid, test, meta_data = globals()[dataset](seed=data_seed)
     n_classes = meta_data['n_classes']
 
@@ -31,10 +31,10 @@ def get_dataset(dataset, n_examples, augmentation, data_seed, batch_size):
         assert test[1].shape[1] == n_classes
         assert train[1].shape[1] == n_classes
 
-    train_stream = to_stream(train, meta_data, augmentation=augmentation, data_seed=data_seed, batch_size=batch_size)
+    train_stream = DatasetGenerator(train, seed=data_seed, batch_size=batch_size, shuffle=True)
 
     # Save some extra versions of the dataset. Just a pattern that is useful.
-    train_stream_duplicated = to_stream(train, meta_data, augmentation=augmentation, data_seed=data_seed, batch_size=batch_size)
+    train_stream_duplicated =  DatasetGenerator(train, seed=data_seed, batch_size=batch_size, shuffle=True)
     x_train_aug, y_train_aug = [], []
     n = 0
     for x, y in train_stream_duplicated:
@@ -48,4 +48,6 @@ def get_dataset(dataset, n_examples, augmentation, data_seed, batch_size):
     meta_data['train_stream_duplicated'] = train_stream_duplicated
 
     # Return
+    valid = DatasetGenerator(valid, seed=data_seed, batch_size=batch_size, shuffle=False)
+    test = DatasetGenerator(test, seed=data_seed, batch_size=batch_size, shuffle=False)
     return train_stream, valid, test, meta_data

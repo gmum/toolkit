@@ -16,7 +16,6 @@ training_loop.reload=False
 # Dataset
 get_dataset.dataset='cifar'
 get_dataset.n_examples=1000
-get_dataset.augmentation='cifar'
 get_dataset.data_seed=777
-cifar.which='10'
+cifar.which=10
 cifar.preprocessing='center'

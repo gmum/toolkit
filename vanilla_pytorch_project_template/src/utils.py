@@ -24,6 +24,8 @@ import atexit
 import json
 import inspect
 
+from logging import handlers
+
 import argh
 import gin
 from gin.config import _OPERATIVE_CONFIG
@@ -116,6 +118,55 @@ def run_with_redirection(stdout_path, stderr_path, func):
                             func(*args, **kwargs)
 
     return func_wrapper
+
+def configure_logger(name='',
+        console_logging_level=logging.INFO,
+        file_logging_level=None,
+        log_file=None):
+    """
+    Configures logger
+    :param name: logger name (default=module name, __name__)
+    :param console_logging_level: level of logging to console (stdout), None = no logging
+    :param file_logging_level: level of logging to log file, None = no logging
+    :param log_file: path to log file (required if file_logging_level not None)
+    :return instance of Logger class
+    """
+
+    if file_logging_level is None and log_file is not None:
+        print("Didnt you want to pass file_logging_level?")
+
+    if len(logging.getLogger(name).handlers) != 0:
+        print("Already configured logger '{}'".format(name))
+        return
+
+    if console_logging_level is None and file_logging_level is None:
+        return  # no logging
+
+    if isinstance(console_logging_level, str):
+        console_logging_level = parse_logging_level(console_logging_level)
+
+    logger = logging.getLogger(name)
+    logger.handlers = []
+    logger.setLevel(logging.DEBUG)
+    format = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+
+    if console_logging_level is not None:
+        ch = logging.StreamHandler(sys.stdout)
+        ch.setFormatter(format)
+        ch.setLevel(console_logging_level)
+        logger.addHandler(ch)
+
+    if file_logging_level is not None:
+        if log_file is None:
+            raise ValueError("If file logging enabled, log_file path is required")
+        fh = handlers.RotatingFileHandler(log_file, maxBytes=(1048576 * 5), backupCount=7)
+        fh.setFormatter(format)
+        logger.addHandler(fh)
+
+    logger.info("Logging configured!")
+
+    return logger
+
 
 def summary(model, file=sys.stderr):
     def repr(model):

@@ -39,12 +39,11 @@ def cifar(which=10, preprocessing="center", seed=777, use_valid=True):
     y_train = np_utils.to_categorical(y_train)
     y_test = np_utils.to_categorical(y_test)
 
-    # Always outputs channels last
-    if x_train.shape[1] == 3:
+    # Always outputs channels first
+    if x_train.shape[-1] == 3:
         logging.info("Transposing")
-        x_train = x_train.transpose((0, 2, 3, 1))
-        x_test = x_test.transpose((0, 2, 3, 1))
-    assert x_train.shape[3] == 3 or x_train.shape[3] == 1
+        x_train = x_train.transpose((0, 3, 1, 2))
+        x_test = x_test.transpose((0, 3, 1, 2))
 
     if use_valid:
         # Some randomization to make sure
@@ -55,9 +54,8 @@ def cifar(which=10, preprocessing="center", seed=777, use_valid=True):
 
         N_valid = int(len(x_train) * 0.1)
 
-        if cls is None:
-            assert len(x_train) == 50000, len(x_train)
-            assert N_valid == 5000
+        assert len(x_train) == 50000, len(x_train)
+        assert N_valid == 5000
 
         (x_train, y_train), (x_valid, y_valid) = (x_train[0:-N_valid], y_train[0:-N_valid]), \
                                                  (x_train[-N_valid:], y_train[-N_valid:])
@@ -129,8 +127,8 @@ def mnist(which="fmnist", preprocessing="01", seed=777, use_valid=True):
         (X_train, y_train), (X_test, y_test) = fashion_mnist.load_data()
         X_train, y_train = np.array(X_train).astype("float32"), np.array(y_train)
         X_test, y_test = np.array(X_test).astype("float32"), np.array(y_test)
-        x_train = X_train.reshape(-1, 28, 28, 1)
-        x_test = X_test.reshape(-1, 28, 28, 1)
+        x_train = X_train.reshape(-1, 1, 28, 28)
+        x_test = X_test.reshape(-1, 1, 28, 28)
     else:
         raise NotImplementedError()
 

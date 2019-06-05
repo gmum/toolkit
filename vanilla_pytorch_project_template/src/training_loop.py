@@ -8,6 +8,8 @@ import os
 import pickle
 from functools import partial
 
+from poutyne.framework import Model
+
 import numpy as np
 import pandas as pd
 import torch
@@ -19,15 +21,13 @@ from src.utils import save_weights
 logger = logging.getLogger(__name__)
 
 
-def _construct_default_callbacks(model, H, save_path, checkpoint_monitor, save_freq, custom_callbacks,
+def _construct_default_callbacks(model, optimizer, H, save_path, checkpoint_monitor, save_freq, custom_callbacks,
                                  use_tb, save_history_every_k_examples):
     callbacks = []
     callbacks.append(LambdaCallback(on_epoch_end=partial(_append_to_history_csv, H=H)))
     callbacks.append(LambdaCallback(on_epoch_end=partial(_save_history_csv, save_path=save_path, H=H)))
     callbacks.append(History(save_every_k_examples=save_history_every_k_examples))
     callbacks.append(ModelCheckpoint(monitor=checkpoint_monitor,
-                                     model=model,
-                                     optimizer=model.optimizer,
                                      save_best_only=True,
                                      mode='max',
                                      filepath=os.path.join(save_path, "model_best_val.pt")))
@@ -35,14 +35,14 @@ def _construct_default_callbacks(model, H, save_path, checkpoint_monitor, save_f
         def save_weights_fnc(epoch, logs):
             if epoch % save_freq == 0:
                 logger.info("Saving model from epoch " + str(epoch))
-                save_weights(model.model, model.optimizer, os.path.join(save_path, "model_last_epoch.pt"))
+                save_weights(model, optimizer, os.path.join(save_path, "model_last_epoch.pt"))
 
         callbacks.append(LambdaCallback(on_epoch_end=save_weights_fnc))
 
     # Always save from first epoch
     def save_weights_fnc(logs=None):
         logger.info("Saving model from beginning")
-        save_weights(model.model, model.optimizer, os.path.join(save_path, "init_weights.pt"))
+        save_weights(model, optimizer, os.path.join(save_path, "init_weights.pt"))
 
     callbacks.append(LambdaCallback(on_train_begin=save_weights_fnc))
     if use_tb:
@@ -57,22 +57,20 @@ def _save_loop_state(epoch, logs, save_path, save_callbacks):
 
     loop_state = {"epochs_done": epoch, "callbacks": save_callbacks}  # 0 index
 
-    ## Small hack to pickle Callbacks in keras ##
+    ## A small hack to pickle callbacks ##
     if len(save_callbacks):
-        m, vd = getattr(save_callbacks[0], "model", None), getattr(save_callbacks[0], "validation_data", None)
+        m, opt, md = save_callbacks[0].get_model(),save_callbacks[0].get_optimizer(), save_callbacks[0].get_meta_data()
         for c in save_callbacks:
-            c.model = None
-            c.optimizer = None
-            c.validation_data = None
-
+            c.set_model(None, ignore=False) # TODO: Remove
+            c.set_optimizer(None)
+            c.set_params(None) # TODO: Remove
+            c.set_meta_data(None)
     pickle.dump(loop_state, open(os.path.join(save_path, "loop_state.pkl"), "wb"))
-
-    ## Revert hack ##
     if len(save_callbacks):
         for c in save_callbacks:
-            c.model = m
-            c.optimizer = m.optimizer
-            c.validation_data = vd
+            c.set_model(m)
+            c.set_optimizer(opt)
+            c.set_meta_data(md)
 
     logger.info("Saved loop_state.pkl")  # TODO: Debug?
 
@@ -101,7 +99,7 @@ def _append_to_history_csv(epoch, logs, H):
             pass
 
 
-def _reload(model, save_path, callbacks):
+def _reload(model, optimizer, save_path, callbacks):
     model_last_epoch_path = os.path.join(save_path, "model_last_epoch.pt")
     loop_state_path = os.path.join(save_path, "loop_state.pkl")
     history_csv_path = os.path.join(save_path, "history.csv")
@@ -113,8 +111,8 @@ def _reload(model, save_path, callbacks):
     # Reload everything (model, optimizer, loop state)
     logger.warning("Reloading weights!")
     checkpoint = torch.load(model_last_epoch_path)
-    model.model.load_state_dict(checkpoint['model'])
-    model.optimizer.load_state_dict(checkpoint['optimizer'])
+    model.load_state_dict(checkpoint['model'])
+    optimizer.load_state_dict(checkpoint['optimizer'])
     logger.info("Reloading loop state!")
     loop_state = pickle.load(open(loop_state_path, 'rb'))
     logger.info("Reloading history!")
@@ -158,13 +156,14 @@ def _training_loop(model, **kwargs):
 
 
 @gin.configurable
-def training_loop(model, meta_data, config, save_path, train, valid, steps_per_epoch,
-                custom_callbacks=[], checkpoint_monitor="val_acc", use_tb=False, reload=False,
+def training_loop(model, loss_function, metrics, optimizer, meta_data, config, save_path, train, valid, steps_per_epoch,
+                custom_callbacks=[], checkpoint_monitor="val_acc", use_tb=False, reload=True,
                   n_epochs=100, save_freq=1, save_history_every_k_examples=-1):
+
     callbacks = list(custom_callbacks)
 
     if reload:
-        H, epoch_start = _reload(model, save_path, callbacks)
+        H, epoch_start = _reload(model, optimizer, save_path, callbacks)
     else:
         history_csv_path, history_pkl_path = os.path.join(save_path, "history.csv"), os.path.join(save_path,
                                                                                                   "history.pkl")
@@ -173,18 +172,19 @@ def training_loop(model, meta_data, config, save_path, train, valid, steps_per_e
         os.system("rm " + history_csv_path)
         H, epoch_start = {}, 0
 
-    callbacks += _construct_default_callbacks(model, H, save_path, checkpoint_monitor,
+    callbacks += _construct_default_callbacks(model, optimizer, H, save_path, checkpoint_monitor,
                                               save_freq, custom_callbacks, use_tb,
                                               save_history_every_k_examples)
 
     # Configure callbacks
     for clbk in callbacks:
         clbk.set_save_path(save_path)
-        clbk.set_model(model)
+        clbk.set_model(model, ignore=False) # TODO: Remove this trick
+        clbk.set_optimizer(optimizer)
         clbk.set_meta_data(meta_data)
         clbk.set_config(config)
 
-
+    model = Model(model=model, optimizer=optimizer, loss_function=loss_function, metrics=metrics)
     _ = model.fit_generator(train,
                             initial_epoch=epoch_start,
                             steps_per_epoch=steps_per_epoch,
