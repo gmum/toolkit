@@ -1,12 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Trains simple CNN on cifar10/cifar100
-
-Run like:
-    * python bin/train.py cifar10 results/test_run
-    * python bin/train.py cifar10 results/test_run --model.n_filters=20
-    * python bin/train.py cifar10_lenet results/test_run
+Trainer script. Example run command: bin/train.py save_to_folder configs/cnn.gin.
 """
 
 import gin
