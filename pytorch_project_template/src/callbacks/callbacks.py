@@ -336,13 +336,12 @@ class MetaSaver(Callback):
                      "most_recent_train_start_date": utc_date,
                      "execution_time": -time_start}
 
-        with open(os.path.join(self.save_path, "config.txt"), "w") as f:
-            f.write(str(self.config))
         json.dump(self.meta, open(os.path.join(self.save_path, "meta.json"), "w"), indent=4)
 
-        # Copy gin config used, for reference, to the save folder
-        gin_path = sys.argv[2]
-        os.system("cp {} {}".format(gin_path, self.save_path))
+        # Copy gin configs used, for reference, to the save folder
+        os.system("rm " + os.path.join(self.save_path, "*gin"))
+        for gin_config in sys.argv[2].split(";"):
+            os.system("cp {} {}".format(gin_config, self.save_path))
 
     def on_train_end(self, logs=None):
         self.meta['execution_time'] += time.time()

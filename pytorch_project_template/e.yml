@@ -1,4 +1,4 @@
-name: vanilla_pytorch_project_template
+name: pytorch_project_template
 channels:
   - pytorch
   - defaults

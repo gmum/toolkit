@@ -96,6 +96,7 @@ def replace_standard_stream(stream_name, file_):
 def gin_wrap(fnc):
     def main(save_path, config, bindings=""):
         # You can pass many configs (think of them as mixins), and many bindings. Both ";" separated.
+        print(config.split(";"))
         gin.parse_config_files_and_bindings(config.split(";"), bindings.replace(";", "\n"))
         print(_OPERATIVE_CONFIG)
         if not os.path.exists(save_path):
@@ -141,9 +142,6 @@ def configure_logger(name='',
 
     if console_logging_level is None and file_logging_level is None:
         return  # no logging
-
-    if isinstance(console_logging_level, str):
-        console_logging_level = parse_logging_level(console_logging_level)
 
     logger = logging.getLogger(name)
     logger.handlers = []
