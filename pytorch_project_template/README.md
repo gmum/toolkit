@@ -54,7 +54,7 @@ Do you have other ideas? Please open an issue and let's discuss. Here are ours:
 
     - See `results/example_run` folder for example files that are produced.
 
-* Each experiment should be as self-contained as possible, e.g. include runner, plotting utilities, etc. 
+* Each experiment should be as self-contained as possible, e.g. include runner, plotting utilities, a README file, etc. 
 
     - See `experiments/tune_lr` for an example. 
     
@@ -94,7 +94,6 @@ We ship an example experiment, where we tune LR for the small CNN on Cifar10. He
 4. See runs: `ls $RESULTS_DIR/tune_lr/large`
 
 5. Process experiment results: `python experiments/tune_lr/main.py report`. Bonus for OSX users: To enable plotting in iterm install ``pip install itermplot``, and uncomment the appropriate line in ``e.sh```.
-
 
 6. Take a look at the main.py source code to understand better the logic.
 
