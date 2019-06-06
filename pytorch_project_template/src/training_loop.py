@@ -177,6 +177,11 @@ def training_loop(model, loss_function, metrics, optimizer, meta_data, config, s
         clbk.set_config(config)
 
     model = Model(model=model, optimizer=optimizer, loss_function=loss_function, metrics=metrics)
+    if  torch.cuda.is_available():
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        logger.info("Sending model to {}".format(device))
+        model.to(device)
+
     _ = model.fit_generator(train,
                             initial_epoch=epoch_start,
                             steps_per_epoch=steps_per_epoch,
