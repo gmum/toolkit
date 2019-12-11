@@ -13,7 +13,6 @@ The main goal of this template is to make easy following the state-of-the-art go
 First, this template includes a minimal trainer ``bin/train.py`` that has:
 
 * A gorgeous training loop (generic training script, checkpointing, callbacks, etc.)
-    - We use Poutyne (only in src.training_loop). Can be swapped for something else.
 * Beautiful config handling
     - We use gin for this
 * Amazing automatic saving of logs and other auxiliary files
