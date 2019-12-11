@@ -7,6 +7,7 @@ Callbacks implementation. Inspired by Keras.
 import tensorflow
 
 from src.utils import save_weights
+from collections import defaultdict
 
 import gin
 import sys
@@ -18,9 +19,8 @@ import time
 import datetime
 import json
 
-from gin.config import _OPERATIVE_CONFIG
-
 logger = logging.getLogger(__name__)
+
 
 class Callback(object):
     def __init__(self):
@@ -76,14 +76,34 @@ class Callback(object):
     def on_batch_end(self, batch, logs):
         pass
 
-    def on_backward_end(self, batch):
-        pass
-
     def on_train_begin(self, logs):
         pass
 
     def on_train_end(self, logs):
         pass
+
+
+class BaseLogger(Callback):
+    """Callback that accumulates epoch averages."""
+    def __init__(self):
+        super(BaseLogger, self).__init__()
+
+    def on_epoch_begin(self, epoch, logs=None):
+        self.seen = 0
+        self.totals = defaultdict(float)
+
+    def on_batch_end(self, batch, logs=None):
+        batch_size = logs.get('size', 0)
+        self.seen += batch_size
+        if logs is not None:
+            for k, v in logs.items():
+                self.totals[k] += v * batch_size
+
+
+    def on_epoch_end(self, epoch, logs=None):
+        if logs is not None:
+            for k in self.totals:
+                logs[k] = self.totals[k] / self.seen
 
 
 @gin.configurable
@@ -100,7 +120,7 @@ class LRSchedule(Callback):
                 break
         for group in self.optimizer.param_groups:
             group['lr'] = v * self.base_lr
-        logger.info("Fix learning rate to {}".format(v * self.base_lr))
+        logger.info("Set learning rate to {}".format(v * self.base_lr))
 
 
 class History(Callback):
@@ -109,6 +129,7 @@ class History(Callback):
 
     By default saves history every epoch, can be configured to save also every k examples
     """
+
     def __init__(self, save_every_k_examples=-1):
         self.examples_seen = 0
         self.save_every_k_examples = save_every_k_examples
@@ -131,7 +152,7 @@ class History(Callback):
             if self.save_every_k_examples != -1:
                 pickle.dump(self.history_batch, open(os.path.join(self.save_path, "history_batch.pkl"), "wb"))
 
-    def on_batch_end(self, epoch, logs=None):
+    def on_batch_end(self, batch, logs=None):
         # Batches starts from 1
         if self.save_every_k_examples != -1:
             if getattr(self.model, "history_batch", None) is None:
@@ -251,45 +272,87 @@ class LambdaCallback(Callback):
             self.on_train_end = lambda logs: None
 
 
-class LambdaCallbackPickableEveryKExamples(LambdaCallback):
+class CallbackPickableEveryKExamples(Callback):
     """
-    Runs lambda every K examples.
+    A callback to run a given lambda function with a specified frequency
+    """
 
-    Note: Assumes 'size' key in batch logs denoting size of the current minibatch
-    """
     def __init__(self,
-                 on_k_examples=None,
-                 k=45000,
-                 call_after_first_batch=False,
+                 frequency="128ex",
+                 on_batch_begin=False,
+                 epoch_size=None,
+                 name=None,
                  **kwargs):
-        super(LambdaCallback, self).__init__()
+        super(CallbackPickableEveryKExamples, self).__init__()
+        logger.info("Construct callback name={} with frequency={}".format(name, str(frequency)))
+        assert name is not None
+
         self.__dict__.update(kwargs)
         self.examples_seen = 0
-        self.call_after_first_batch = call_after_first_batch
+        self.call_on_batch_begin = on_batch_begin
+        self.epoch_size = epoch_size
+        self.name = name
         self.examples_seen_since_last_call = 0
-        self.k = k
-        self.on_k_examples = on_k_examples
+        if frequency.endswith("ex"):
+            self.threshold = int(frequency[0:-2])
+        elif frequency.endswith("exp"):
+            self.threshold = int(self.epoch_size * float(frequency[0:-3]))
+        else:
+            raise NotImplementedError()
+        self._epoch_logs = []
         self.calls = 0
 
-    def on_batch_end(self, batch, logs=None):
-        # Batches starts from 1
+    def on_batch_k_examples(self, batch, logs):
+        raise NotImplementedError()
+
+    def _call(self, batch, logs=None):
         assert "size" in logs
         self.examples_seen += logs['size']
         self.examples_seen_since_last_call += logs['size']
 
-        if (self.call_after_first_batch and batch == 1) \
-                or self.examples_seen_since_last_call > self.k:
-            logger.info("Batch " + str(batch))
-            logger.info("Firing on K examples, ex seen = " + str(self.examples_seen))
-            logger.info("Firing on K examples, ex seen last call = " + str(self.examples_seen_since_last_call))
-            self.on_k_examples(logs) # self.calls, self.examples_seen,
-            self.examples_seen_since_last_call = 0
+        # Always call on batch 0
+        if (self.calls == 0) or (self.examples_seen_since_last_call >= self.threshold):
+            t_start = time.time()
+
+            logs_callback = {}
+            self.on_batch_k_examples(batch=self.calls, logs=logs_callback)
+            self._epoch_logs.append(logs_callback)
+
+            logs_callback['time/' + self.name] = time.time() - t_start
+            logs_callback['step/' + self.name] = self.calls
+            logs_callback['examples_seen/' + self.name] = self.examples_seen
+
+            logs.update(logs_callback)
+
             self.calls += 1
 
-    def __getstate__(self):
-        state = self.__dict__.copy()
-        del state['on_k_examples']
-        return state
+            if self.examples_seen_since_last_call >= self.threshold:
+                self.examples_seen_since_last_call = 0
+
+    def on_batch_end(self, batch, logs=None):
+        if self.call_on_batch_begin is False:
+            self._call(batch, logs)
+            # There is alig here
+
+    def on_batch_begin(self, batch, logs=None):
+        if self.call_on_batch_begin is True:
+            self._call(batch, logs)
+
+    def on_epoch_end(self, epoch, logs=None):
+        # Small hacky code which collects data from batch
+        logs_avg = defaultdict(float)
+
+        for logs_batch in self._epoch_logs:
+            for k in logs_batch:
+                logs_avg[k] += logs_batch[k]
+
+        for k in logs_avg:
+            logs_avg[k] /= len(self._epoch_logs)
+
+        for k in logs_avg:
+            logs[k] = logs_avg[k]
+
+        self._epoch_logs = []
 
 
 class DumpTensorboardSummaries(Callback):

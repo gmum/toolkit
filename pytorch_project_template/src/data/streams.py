@@ -2,14 +2,7 @@
 """
 Streams used in the project (e.g. augmentation)
 """
-import os
-import logging
 import numpy as np
-
-from keras.preprocessing.image import ImageDataGenerator
-from keras.utils import np_utils
-
-logger = logging.getLogger(__name__)
 
 class DatasetGenerator(object):
     def __init__(self, dataset, seed, batch_size, shuffle=True):
@@ -27,8 +20,8 @@ class DatasetGenerator(object):
         self.dataset = [self.dataset[0][ids], self.dataset[1][ids]]
         def _iter():
             for id in range((len(self.dataset[0]) + self.batch_size - 1) // self.batch_size):
-                yield self.dataset[0][id * self.batch_size:(id + 1) * self.batch_size], self.dataset[1][
-                id * self.batch_size:(id + 1) * self.batch_size]
+                yield self.dataset[0][id * self.batch_size:(id + 1) * self.batch_size], \
+                      self.dataset[1][id * self.batch_size:(id + 1) * self.batch_size]
         return _iter()
 
     def __len__(self):

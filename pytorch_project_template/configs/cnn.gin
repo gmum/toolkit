@@ -6,7 +6,7 @@ SimpleCNN.n_dense=10
 # Train configuration
 train.batch_size=128
 train.callbacks=['lr_schedule', 'meta_saver']
-LRSchedule.schedule=[[2, 1.0],[10, 0.1]]
+LRSchedule.schedule=[[5, 1.0],[10, 0.1]]
 LRSchedule.base_lr=0.01
 
 # Training loop

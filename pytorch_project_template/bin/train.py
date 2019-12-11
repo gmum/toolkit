@@ -35,10 +35,8 @@ def train(save_path, model, lr=0.1, batch_size=128, callbacks=[]):
             callbacks_constructed.append(clbk)
 
     # Pass everything to the training loop
-    steps_per_epoch = (len(meta_data['x_train']) - 1) // batch_size + 1
     training_loop(model=model, optimizer=optimizer, loss_function=loss_function, metrics=[acc],
-                  train=train, valid=test, meta_data=meta_data, steps_per_epoch=steps_per_epoch,
-                  save_path=save_path, config=_CONFIG,
+                  train=train, valid=test, meta_data=meta_data, save_path=save_path, config=_CONFIG,
                   use_tb=True, custom_callbacks=callbacks_constructed)
 
 

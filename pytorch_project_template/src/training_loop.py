@@ -1,22 +1,23 @@
 # -*- coding: utf-8 -*-
 """
-A gorgeous, self-contained, training loop. Uses Poutyne implementation, but this can be swapped later.
+A gorgeous and self-contained training loop.
 """
 
 import logging
 import os
 import tqdm
 import pickle
-from functools import partial
 
-from poutyne.framework import Model
+from functools import partial
+from collections import defaultdict
+from contextlib import contextmanager
 
 import numpy as np
 import pandas as pd
 import torch
 import gin
 
-from src.callbacks.callbacks import ModelCheckpoint, LambdaCallback, History, DumpTensorboardSummaries
+from src.callbacks.callbacks import ModelCheckpoint, LambdaCallback, History, DumpTensorboardSummaries, BaseLogger
 from src.utils import save_weights
 
 logger = logging.getLogger(__name__)
@@ -25,6 +26,7 @@ logger = logging.getLogger(__name__)
 def _construct_default_callbacks(model, optimizer, H, save_path, checkpoint_monitor, save_freq, custom_callbacks,
                                  use_tb, save_history_every_k_examples):
     callbacks = []
+    callbacks.append(BaseLogger())
     callbacks.append(LambdaCallback(on_epoch_end=partial(_append_to_history_csv, H=H)))
     callbacks.append(LambdaCallback(on_epoch_end=partial(_save_history_csv, save_path=save_path, H=H)))
     callbacks.append(History(save_every_k_examples=save_history_every_k_examples))
@@ -48,8 +50,6 @@ def _construct_default_callbacks(model, optimizer, H, save_path, checkpoint_moni
 
 
 def _save_loop_state(epoch, logs, save_path, save_callbacks):
-    logger.info("Saving loop_state.pkl")  # TODO: Debug?
-
     loop_state = {"epochs_done": epoch, "callbacks": save_callbacks}  # 0 index
 
     ## A small hack to pickle callbacks ##
@@ -66,8 +66,6 @@ def _save_loop_state(epoch, logs, save_path, save_callbacks):
             c.set_model(m)
             c.set_optimizer(opt)
             c.set_meta_data(md)
-
-    logger.info("Saved loop_state.pkl")  # TODO: Debug?
 
 
 def _save_history_csv(epoch, logs, save_path, H):
@@ -145,12 +143,93 @@ def _reload(model, optimizer, save_path, callbacks):
 
     return H, epoch_start
 
+@contextmanager
+def _set_training_mode(model, training):
+    old_training = model.training
+    model.train(training)
+    with torch.set_grad_enabled(training):
+        yield
+    model.train(old_training)
+
+
+def _training_loop(model, valid_generator, train_generator, optimizer, loss_function, initial_epoch, epochs, callbacks,
+                   metrics=[], device="cuda"):
+    """
+    Internal implementation of the training loop.
+
+    Notes
+    -----
+    Loosly based on https://github.com/keras-team/keras/keras/engine/training_generator.py
+    """
+    model.to(device)
+
+    for c in callbacks:
+        c.on_train_begin(model)
+
+    for epoch in range(initial_epoch, epochs):
+        epoch_logs = {}
+
+        for c in callbacks:
+            c.on_epoch_begin(epoch, epoch_logs)
+
+        # Train an epoch
+        with _set_training_mode(model, True):
+            for batch_id, (x_train, y_train) in enumerate(train_generator):
+                x_train, y_train = torch.from_numpy(x_train), torch.from_numpy(y_train)
+                x_train, y_train = x_train.to(device), y_train.to(device)
+
+                batch_logs = {"size": len(x_train), "batch": batch_id}
+
+                for c in callbacks:
+                    c.on_batch_begin(batch=batch_id, logs=batch_logs)
+
+                optimizer.zero_grad()
+
+                outputs = model(x_train)
+                loss = loss_function(outputs, y_train)
+                loss.backward()
+                optimizer.step()
+
+                # Update logs
+                for m in metrics:
+                    batch_logs[m.__name__] = float(m(outputs, y_train))
+                batch_logs['loss'] = loss.item()
+
+                for c in callbacks:
+                    c.on_batch_end(batch=batch_id, logs=batch_logs)
+
+        # Validate
+        with _set_training_mode(model, False):
+            val = defaultdict(float)
+            seen = 0
+            for x_valid, y_valid in valid_generator:
+                x_valid, y_valid = torch.from_numpy(x_valid), torch.from_numpy(y_valid)
+                x_valid, y_valid = x_valid.to(device), y_valid.to(device)
+                seen += len(x_valid)
+                outputs = model(x_valid)
+                val['loss'] += loss_function(outputs, y_valid) * len(x_valid)
+                for m in metrics:
+                    val[m.__name__] += float(m(outputs, y_valid)) * len(x_valid)
+            for k in val:
+                epoch_logs['val_' + k] = val[k] / seen
+
+        for c in callbacks:
+            c.on_epoch_end(epoch, epoch_logs)
+
+        logger.info('End of epoch {}, loss={}, val_loss={}'.format(epoch, epoch_logs['loss'], epoch_logs['val_loss']))
+
+    for c in callbacks:
+        c.on_train_end(model)
+
 
 @gin.configurable
-def training_loop(model, loss_function, metrics, optimizer, meta_data, config, save_path, train, valid, steps_per_epoch,
+def training_loop(model, loss_function, metrics, optimizer, meta_data, config, save_path, train, valid,
                   custom_callbacks=[], checkpoint_monitor="val_acc", use_tb=False, reload=True,
-                  n_epochs=100, save_freq=1, save_history_every_k_examples=-1):
+                  n_epochs=100, save_freq=1, save_history_every_k_examples=-1, device=None):
     callbacks = list(custom_callbacks)
+
+    if device is None:
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
     if reload:
         H, epoch_start = _reload(model, optimizer, save_path, callbacks)
@@ -176,16 +255,5 @@ def training_loop(model, loss_function, metrics, optimizer, meta_data, config, s
         clbk.set_meta_data(meta_data)
         clbk.set_config(config)
 
-    model = Model(model=model, optimizer=optimizer, loss_function=loss_function, metrics=metrics)
-    if  torch.cuda.is_available():
-        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-        logger.info("Sending model to {}".format(device))
-        model.to(device)
-
-    _ = model.fit_generator(train,
-                            initial_epoch=epoch_start,
-                            steps_per_epoch=steps_per_epoch,
-                            epochs=n_epochs - 1,  # Weird convention
-                            verbose=1,
-                            valid_generator=valid,
-                            callbacks=callbacks)
+    _training_loop(model, valid, train, optimizer, loss_function, epoch_start, n_epochs, callbacks,
+                   metrics=metrics, device=device)

@@ -4,6 +4,8 @@ Simple machine learning project template based on PyTorch.
 
 If you are impatient just jump to the tutorial at the end of this README.
 
+A small warning is due. This has been rewritten recently to remove the dependency on PyToune. It might include some bugs.
+
 ## Introduction
 
 The main goal of this template is to make easy following the state-of-the-art good practices for a machine learning project. This includes reducing boilerplate, or keeping config handling simple and consistent.
@@ -93,7 +95,7 @@ We ship an example experiment, where we tune LR for the small CNN on Cifar10. He
 
 4. See runs: `ls $RESULTS_DIR/tune_lr/large`
 
-5. Process experiment results: `python experiments/tune_lr/main.py report`. Bonus for OSX users: To enable plotting in iterm install ``pip install itermplot``, and uncomment the appropriate line in ``e.sh```.
+    5. Process experiment results: `python experiments/tune_lr/main.py report`. Bonus for OSX users: To enable plotting in iterm install ``pip install itermplot``, and uncomment the appropriate line in ``e.sh```.
 
 6. Take a look at the main.py source code to understand better the logic.
 
