@@ -4,8 +4,6 @@ Simple machine learning project template based on PyTorch.
 
 If you are impatient just jump to the tutorial at the end of this README.
 
-A small warning is due. This has been rewritten recently to remove the dependency on PyToune. It might include some bugs.
-
 ## Introduction
 
 The main goal of this template is to make easy following the state-of-the-art good practices for a machine learning project. This includes reducing boilerplate, or keeping config handling simple and consistent.
