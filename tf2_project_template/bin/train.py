@@ -32,7 +32,6 @@ def train(save_path,
           model,
           datasets=['cifar_pytorch'],
           optimizer="SGD",
-          datasets_modifiers=[{}, {}],
           data_seed=777,
           seed=777,
           batch_size=128,
@@ -51,20 +50,10 @@ def train(save_path,
     np.random.seed(seed)
 
     # Create dataset generators (seeded)
-    for dm in datasets_modifiers:
-        dm['one_hot'] = True
-        if len(dm) > 1:
-            logger.warning("Using dataset modifiers! Try to avoid this pattern as it might lead to conflicts with gin bindings")
-            if len(datasets) == len(set(datasets)) and not force_multiinstance:
-                raise NotImplementedError("Please dont use dataset_modifiers if no multiinstance of the same object")
-    datasets = [get_dataset(d, seed=data_seed, batch_size=batch_size, **dm) for d, dm in zip(datasets, datasets_modifiers)]
+    datasets = [get_dataset(d, seed=data_seed, batch_size=batch_size) for d in datasets]
 
     # Create model
     model = models.__dict__[model](input_shape=datasets[0][-1]['input_shape'], n_classes=datasets[0][-1]['num_classes'])
-    try:
-        model._set_inputs(next(datasets[0][-1]['train_stream_duplicated'].__iter__())[0])
-    except:
-        pass
     logger.info("# of parameters " + str(sum([np.prod(p.shape) for p in model.trainable_weights])))
     model.summary()
     if loss == 'ce':

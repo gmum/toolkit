@@ -2,10 +2,6 @@
 
 Simple machine learning project template based on TensorFlow 2.0 (which is extremely similar to PyTorch or JAX). 
 
-If you are impatient just jump to the tutorial at the end of this README.
-
-A small warning is due. This has been rewritten recently to remove the dependency on PyToune. It might include some bugs.
-
 ## Installation and Setup
 
 This template uses conda. To setup the enviornment, run:
