@@ -34,10 +34,7 @@ if __name__ == "__main__":
     # Note: Load_HC doesn't load gin properly
     gin.parse_config_files_and_bindings([os.path.join(os.path.join(E, "config.gin"))], bindings=[""])
     logger.info(C['train']['datasets'])
-    for dm in C['train']['datasets_modifiers']:
-        dm['one_hot'] = True
-    datasets = [get_dataset(d, seed=C['train']['data_seed'], batch_size=C['train']['batch_size'], **dm) for d, dm in
-                zip(C['train']['datasets'], C['train']['datasets_modifiers'])]
+    datasets = [get_dataset(d, seed=C['train']['data_seed'], batch_size=C['train']['batch_size']) for d in C['train']['datasets']]
 
     model = models.__dict__[C['train']['model']](input_shape=datasets[0][-1]['input_shape'],
                                                  n_classes=datasets[0][-1]['num_classes'])

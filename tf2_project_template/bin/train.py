@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 @gin.configurable
 def train(save_path,
           model,
-          datasets=['cifar_pytorch'],
+          datasets=['cifar10'],
           optimizer="SGD",
           data_seed=777,
           seed=777,
@@ -44,9 +44,7 @@ def train(save_path,
           momentum=0.9,
           testing=False,
           testing_reload_best_val=True,
-          callbacks_kwargs=[], # Allows multiple callbacks
-          callbacks=[],
-          force_multiinstance=False):
+          callbacks=[]):
     np.random.seed(seed)
 
     # Create dataset generators (seeded)
@@ -70,14 +68,8 @@ def train(save_path,
 
     # Create callbacks
     callbacks_constructed = []
-    if len(callbacks_kwargs) == 0:
-        callbacks_kwargs = [{} for _ in callbacks]
-    for name, kwargs in zip(callbacks, callbacks_kwargs):
-        if len(kwargs):
-            logger.warning("Using callbacks modifiers! Try to avoid this pattern as it might lead to conflicts with gin bindings")
-            if len(callbacks) == len(set(callbacks)) and not force_multiinstance:
-                raise NotImplementedError("Please dont use callback_modifiers if no multiinstance of the same object")
-        clbk = get_callback(name, verbose=0, **kwargs)
+    for name in callbacks:
+        clbk = get_callback(name, verbose=0)
         if clbk is not None:
             callbacks_constructed.append(clbk)
         else:

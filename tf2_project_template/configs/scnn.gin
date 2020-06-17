@@ -25,5 +25,6 @@ training_loop.reload=False
 train.datasets=['cifar']
 cifar.stream_seed=1
 cifar.n_examples=-1
+cifar.one_hot=True
 cifar.use_valid=False
 train.data_seed=777
