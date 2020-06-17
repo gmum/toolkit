@@ -40,10 +40,6 @@ This repo also ships with:
 
 In the rest of this document we walk through all the key design principles and how we implement them. Finally, there is a quick tutorial.
 
-## TODO
-
-[] Make sure evaluate works and add text around it in README.md
-
 ## Tutorial: single training
 
 Take the following steps:
