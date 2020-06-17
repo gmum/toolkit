@@ -1,0 +1,29 @@
+# Model
+train.model='SimpleCNN'
+SimpleCNN.bn=False # Stateless
+SimpleCNN.kernel_size=5
+SimpleCNN.n_filters=32
+
+# Train configuration
+train.batch_size=128
+train.callbacks=['lr_schedule', 'neptune_monitor']
+train.momentum=0.0
+train.wd=0.0
+train.seed=777
+train.steps_per_epoch=1 # For speed purposes. Change to -1.
+train.data_seed=777
+LRSchedule.base_lr=0.03
+LRSchedule.schedule=[[150, 1.0],[225, 0.1],[30000, 0.01]] # A pretty standard schedule, for some reason
+
+# Training loop
+training_loop.n_epochs=2
+training_loop.evaluation_freq=1
+training_loop.save_freq=1
+training_loop.reload=False
+
+# Dataset
+train.datasets=['cifar']
+cifar.stream_seed=1
+cifar.n_examples=-1
+cifar.use_valid=False
+train.data_seed=777

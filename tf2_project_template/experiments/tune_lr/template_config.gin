@@ -1,0 +1,24 @@
+# Model
+train.model='SimpleCNN'
+SimpleCNN.n_filters=30
+SimpleCNN.n_dense=10
+
+# Train configuration
+train.batch_size=128
+train.steps_per_epoch=1
+train.callbacks=['lr_schedule', 'meta_saver']
+LRSchedule.schedule=[[1.0,2],[0.01,10]]
+LRSchedule.base_lr=$learning_rate$
+
+# Training loop
+training_loop.n_epochs=2
+training_loop.evaluation_freq=1
+training_loop.save_freq=1
+training_loop.reload=False
+
+# Dataset
+train.datasets=['cifar']
+cifar.stream_seed=1
+cifar.n_examples=-1
+cifar.use_valid=False
+train.data_seed=777
