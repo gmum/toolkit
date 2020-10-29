@@ -23,11 +23,15 @@ import signal
 import atexit
 import json
 import inspect
+import pandas as pd
+import pickle
 
 from logging import handlers
 
 import argh
 import gin
+
+from os.path import join, exists
 from gin.config import _OPERATIVE_CONFIG
 
 import torch
@@ -52,6 +56,38 @@ def parse_gin_config(path):
 
         C[k1 + "." + k2] = v
     return C
+
+
+def load_H(e):
+    """
+    Loads a unified view of the experiment as a dict
+    """
+    Hs = []
+    for version in glob.glob(join(e, 'default', '*')):
+        if os.path.exists(join(version, "metrics.csv")):
+            H = pd.read_csv(join(version, "metrics.csv"))
+            Hs.append(H)
+
+
+    print(Hs)
+
+    H = pd.concat(Hs).to_dict()
+
+    # Add evaluation results
+    eval_results = {}
+    for f_name in glob.glob(os.path.join(e, 'eval_results*json')):
+        ev = json.load(open(f_name))
+        for k in ev:
+            eval_results[os.path.basename(f_name) + "_" + k] = [ev[k]]
+    for k in eval_results:
+        H['eval_' + k] = eval_results[k]
+
+    return H
+
+
+def load_HC(e):
+    pass
+
 
 def acc(y_pred, y_true):
     _, y_pred = y_pred.max(1)
@@ -224,3 +260,8 @@ def summary(model, file=sys.stderr):
     if file is not None:
         print(string, file=file)
     return count
+
+
+if __name__ == "__main__":
+    H = load_H("save_to_folder2")
+    print(H)

@@ -21,3 +21,5 @@ from src.utils import save_weights
 
 logger = logging.getLogger(__name__)
 
+def train(pl_module):
+    pass

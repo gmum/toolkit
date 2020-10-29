@@ -1,26 +1,34 @@
 # PyTorch project template
 
-Simple machine learning project template based on PyTorch. 
+Simple machine learning project template based on PyTorch and Pytorch Lightning. The main ambition of this template is to make easy following the state-of-the-art good practices for a machine learning project. 
 
 If you are impatient just jump to the tutorial at the end of this README.
 
 ## Introduction
 
-The main goal of this template is to make easy following the state-of-the-art good practices for a machine learning project. This includes reducing boilerplate, or keeping config handling simple and consistent.
+This includes reducing boilerplate, or keeping config handling simple and consistent.
 
-First, this template includes a minimal trainer ``bin/train.py`` that has:
+## Why not just use Pytorch Lightning?
 
-* A gorgeous training loop (generic training script, checkpointing, callbacks, etc.)
-* Beautiful config handling
-    - We use gin for this
-* Amazing automatic saving of logs and other auxiliary files
+While a huge improvement, Pytorch Lightning (PL) still leaves you with many choices to be made.
 
-This repo also ships with:
+This repository makes opinionated choices that integrates best ideas from PL, Keras, and other frameworks:
 
-* An example experiment in `experiments/tune_lr`
-* Environment configuration 
+    * modular code structure that separates out models/data/callbacks (like in Keras)
+        
+        - we advocate to avoid putting too much logic in a PL module as it becomes monolythic and hard to read and work with
 
-In the rest of this document we walk through all the key design principles and how we implement them. Finally, there is a quick tutorial.
+    * configuration using gin config from Google (PL uses argparse, which requires a lot of boilerplate code)
+    
+    * dynamic loading of callbacks, models, etc, by name (like in Keras)
+     
+    * providing template for running a grid search (see ``experiments``)
+     
+    * template for environment configuration (as sourced e.sh)
+     
+    * unified loading and processing experimental results (``load_C``, ``load_H`` functions, evaluation scripts)
+     
+    * utility scripts (for now script syncing files using ``watchman``)
 
 ## Good practices 
 
@@ -60,7 +68,6 @@ Do you have other ideas? Please open an issue and let's discuss. Here are ours:
 * Test everything easily testable
    
     - We have asserts sprinkled across the code, but probably not as many as we should.
-    
 
 ## Tutorial: single training
 

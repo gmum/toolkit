@@ -25,8 +25,6 @@ from bin.train_supervised import *
 import argh
 
 def evaluate(save_path, checkpoint_name="weights.ckpt"):
-    # Note: for resumed training you need to manually specify latest version
-
     # Load config
     config = parse_gin_config(os.path.join(save_path, "config.gin"))
     gin.parse_config_files_and_bindings([os.path.join(os.path.join(save_path, "config.gin"))], bindings=[""])
@@ -34,14 +32,22 @@ def evaluate(save_path, checkpoint_name="weights.ckpt"):
     # Create dynamically dataset generators
     train, valid, test, meta_data = get_dataset(batch_size=config['train.batch_size'], seed=config['train.seed'])
 
+    # Load model (a bit hacky, but necessary because load_from_checkpoint seems to fail)
     ckpt_path = os.path.join(save_path, checkpoint_name)
+    ckpt = torch.load(ckpt_path)
+    model = models.__dict__[config['train.model']]()
+    summary(model)
+    pl_module = SupervisedLearning(model, lr=0.0)
+    pl_module.load_state_dict(ckpt['state_dict'])
 
-    pl_module = SupervisedLearning.load_from_checkpoint(ckpt_path)
+    # NOTE: This fails, probably due to a bug in Pytorch Lightning. The above is manually doing something similar
+    # ckpt_path = os.path.join(save_path, checkpoint_name)
+    # pl_module = SupervisedLearning.load_from_checkpoint(ckpt_path)
 
     trainer = pl.Trainer()
     results, = trainer.test(model=pl_module, test_dataloaders=test, ckpt_path=ckpt_path)
     logger.info(results)
-    with open(os.path.join(save_path, "eval_results.json"), "w") as f:
+    with open(os.path.join(save_path, "eval_results_{}.json".format(checkpoint_name)), "w") as f:
         json.dump(results, f)
 
 if __name__ == "__main__":
