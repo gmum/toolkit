@@ -1,0 +1,18 @@
+2019-12-11 12:23:45,203 - root - INFO - Transposing
+2019-12-11 12:23:46,749 - root - INFO - x_train shape:(45000, 3, 32, 32)
+2019-12-11 12:23:46,749 - root - INFO - 45000train samples
+2019-12-11 12:23:46,750 - root - INFO - 10000test samples
+2019-12-11 12:23:46,750 - root - INFO - 5000valid samples
+2019-12-11 12:23:46,750 - root - INFO - y_train shape:(45000,)
+2019-12-11 12:23:46,768 - src.training_loop - WARNING - Failed to find last epoch model or loop state
+2019-12-11 12:23:46,768 - src.callbacks.callbacks - INFO - Saving meta data information from the beginning of training
+2019-12-11 12:23:46,786 - src.callbacks.callbacks - INFO - Set learning rate to 0.02
+2019-12-11 12:23:48,512 - src.training_loop - INFO - val_acc=10.53	size=125.504	batch=3.416	acc=10.300000061035156	loss=2.327302572250366	
+2019-12-11 12:23:48,516 - src.training_loop - INFO - Saving history to /Users/jastrs01/Dropbox/Projekty/toolkit/pytorch_project_template/results/tune_lr/large/1/history.csv
+2019-12-11 12:23:48,520 - src.training_loop - INFO - Saving model from epoch 0
+2019-12-11 12:23:48,522 - src.training_loop - INFO - End of epoch 0, loss=2.327302572250366, val_loss=2.3160147666931152
+2019-12-11 12:23:48,522 - src.callbacks.callbacks - INFO - Set learning rate to 0.1
+2019-12-11 12:23:50,410 - src.training_loop - INFO - val_acc=13.75	size=125.504	batch=3.416	acc=10.000000053405762	loss=2.3102796669006347	
+2019-12-11 12:23:50,411 - src.training_loop - INFO - Saving history to /Users/jastrs01/Dropbox/Projekty/toolkit/pytorch_project_template/results/tune_lr/large/1/history.csv
+2019-12-11 12:23:50,415 - src.training_loop - INFO - Saving model from epoch 1
+2019-12-11 12:23:50,416 - src.training_loop - INFO - End of epoch 1, loss=2.3102796669006347, val_loss=2.2828688621520996

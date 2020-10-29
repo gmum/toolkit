@@ -1,0 +1,6 @@
+{
+    "cmd": "python bin/train.py /Users/jastrs01/Dropbox/Projekty/toolkit/pytorch_project_template/results/tune_lr/large/2 experiments/tune_lr/large/configs/2.gin -b training_loop.reload=True",
+    "save_path": "/Users/jastrs01/Dropbox/Projekty/toolkit/pytorch_project_template/results/tune_lr/large/2",
+    "most_recent_train_start_date": "2019_12_11",
+    "execution_time": 3.3339240550994873
+}

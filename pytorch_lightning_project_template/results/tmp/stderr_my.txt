@@ -1,0 +1,12 @@
+2019-06-03 16:25:18,603 - root - INFO - Transposing
+2019-06-03 16:25:18,699 - root - INFO - x_train shape:(1280, 3, 32, 32)
+2019-06-03 16:25:18,699 - root - INFO - 1280train samples
+2019-06-03 16:25:18,699 - root - INFO - 1280test samples
+2019-06-03 16:25:18,732 - src.training_loop - WARNING - Reloading weights!
+2019-06-03 16:25:18,735 - src.training_loop - INFO - Reloading loop state!
+2019-06-03 16:25:18,768 - src.training_loop - INFO - Reloading history!
+2019-06-03 16:25:18,773 - src.training_loop - INFO - Done reloading!
+2019-06-03 16:25:18,801 - src.training_loop - INFO - {'epochs_done': 0, 'callbacks': [<src.callbacks.callbacks.MetaSaver object at 0xb38f23cc0>, <src.callbacks.callbacks.LRSchedule object at 0xb38f232e8>]}
+2019-06-03 16:25:18,802 - src.training_loop - INFO - ('epoch', 6)
+2019-06-03 16:25:18,802 - src.training_loop - INFO - epoch_start=1
+2019-06-03 16:25:18,833 - src.training_loop - INFO - Saving model from beginning

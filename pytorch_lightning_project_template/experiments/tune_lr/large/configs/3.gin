@@ -1,0 +1,20 @@
+# Model
+train.model='SimpleCNN'
+SimpleCNN.n_filters=30
+SimpleCNN.n_dense=10
+
+# Train configuration
+train.batch_size=128
+train.callbacks=['lr_schedule', 'meta_saver']
+LRSchedule.schedule=[[1.0,2],[0.01,10]]
+LRSchedule.base_lr=16
+
+# Training loop
+training_loop.n_epochs=2
+
+# Dataset
+get_dataset.dataset='cifar'
+get_dataset.n_examples=1000
+get_dataset.data_seed=777
+cifar.which=10
+cifar.preprocessing='center'

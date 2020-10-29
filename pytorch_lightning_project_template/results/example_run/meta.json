@@ -1,0 +1,6 @@
+{
+    "cmd": "python bin/train.py results/example_run configs/cnn.gin -b=training_loop.n_epochs=2",
+    "save_path": "results/example_run",
+    "most_recent_train_start_date": "2019_06_05",
+    "execution_time": 3.706902027130127
+}
