@@ -10,7 +10,7 @@ While a huge step forward, Pytorch Lightning (PL) still leaves you with many cho
 
 * Modular code structure that separates out models/data/callbacks (like in Keras) and avoids monolithic and hard to read code
     
-    - We advocate to avoid putting too much logic in a PL module as it becomes monolithic and hard to read and work with
+    - We advocate against putting too much logic in a PL module as it becomes monolithic and hard to read and work with
 
 * Configuration using gin config from Google
 
@@ -18,25 +18,20 @@ While a huge step forward, Pytorch Lightning (PL) still leaves you with many cho
 
 * Dynamic loading of callbacks, models, etc, by name (like in Keras)
 
-    - Not provided by PL
  
 * Providing template for running a grid search (see ``experiments``)
 
-    - Not provided by PL
  
 * Template for environment configuration (as sourced e.sh)
 
-    - Not provided by PL
  
 * Unified loading and processing experimental results (``load_C``, ``load_H`` functions, evaluation scripts)
     
-    - Not provided by PL. This is a good design principle that makes it easier to repurpose plotting code
+    - his is a good design principle that makes it easier to repurpose plotting code
  
 * Utility scripts templates (automatic file syncing using watchman, running on SLURM, etc)
-    
-    - Not provided by PL
-    
-* We advocate to avoid using ad-hoc script for processing experiments but rather use structured code (see `experiments/tune_lr/main.py`)
+
+* We advocate against using ad-hoc script for processing experiments but rather for using structured code (see `experiments/tune_lr/main.py`)
 
     - In this way you will reuse the code more often and write less bugs. No more IPython notebooks that no one understands and have ton of bugs.
 
