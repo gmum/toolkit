@@ -1,6 +1,0 @@
-{
-    "cmd": "python bin/train.py cifar10 results/tmp2 --n_epochs=1 --reload --meta_saver.force_train=1 --save_history_every_k_examples=150",
-    "save_path": "results/tmp2",
-    "start_utc_date": "2019_06_03",
-    "execution_time": 3.027817964553833
-}
