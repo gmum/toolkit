@@ -1,6 +1,6 @@
 # PyTorch Lightning project template
 
-Simple machine learning project template based on PyTorch and Pytorch Lightning. The main ambition of this template is to make easy following the state-of-the-art good practices for a machine learning project. 
+Simple machine learning project template based on PyTorch and Pytorch Lightning and other key tools (gin, neptune, and more). The main ambition of this template is to make easy following the state-of-the-art good practices for a machine learning project. 
 
 If you are impatient just jump to the tutorial at the end of this README.
 
