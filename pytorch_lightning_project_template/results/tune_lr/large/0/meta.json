@@ -1,6 +1,6 @@
 {
-    "cmd": "python bin/train.py /Users/jastrs01/Dropbox/Projekty/toolkit/pytorch_project_template/results/tune_lr/large/0 experiments/tune_lr/large/configs/0.gin -b training_loop.reload=True",
-    "save_path": "/Users/jastrs01/Dropbox/Projekty/toolkit/pytorch_project_template/results/tune_lr/large/0",
-    "most_recent_train_start_date": "2019_12_11",
-    "execution_time": 3.176530122756958
+    "cmd": "python bin/train_supervised.py /Users/kudkudak/Dropbox/Projekty/toolkit/pytorch_lightning_project_template/results/tune_lr/large/0 experiments/tune_lr/large/configs/0.gin",
+    "save_path": "/Users/kudkudak/Dropbox/Projekty/toolkit/pytorch_lightning_project_template/results/tune_lr/large/0",
+    "most_recent_train_start_date": "2020_10_29",
+    "execution_time": 7.5456647872924805
 }

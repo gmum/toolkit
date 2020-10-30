@@ -128,7 +128,7 @@ dependencies:
   - pip:
     - argh==0.26.2
     - enum34==1.1.6
+    - pytorch-lightning==1.0.0
     - gin-config==0.1.4
     - itermplot==0.331
-prefix: /Users/jastrs01/anaconda3/envs/vanilla_pytorch_project_template
 

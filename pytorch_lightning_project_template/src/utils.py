@@ -57,10 +57,18 @@ def parse_gin_config(path):
         C[k1 + "." + k2] = v
     return C
 
+def load_C(e):
+    return parse_gin_config(join(e, 'config.gin'))
+
 
 def load_H(e):
     """
-    Loads a unified view of the experiment as a dict
+    Loads a unified view of the experiment as a dict.
+
+    Notes
+    -----
+    Assumes logs are generated using CSVLogger and that name is train_[k]_step/train_[k]_epoch/valid_[k] for a metric
+    of key logged in a given step, train epoch, valid epoch, respectively.
     """
     Hs = []
     for version in glob.glob(join(e, 'default', '*')):
@@ -68,10 +76,32 @@ def load_H(e):
             H = pd.read_csv(join(version, "metrics.csv"))
             Hs.append(H)
 
+    if len(Hs) == 0:
+        logger.warning("No found metrics in " + e)
+        return {}
 
-    print(Hs)
+    H = pd.concat(Hs) #.to_dict('list')
 
-    H = pd.concat(Hs).to_dict()
+    # Boilerplate to split Pytorch Lightning's metrics into 3 parts
+    # TODO: Refactor this. I think the best way would be to have a custom CSVLogger that doesn't log everything together
+    valid_keys = [k for k in H.columns if k.startswith("valid")]
+    train_epoch_keys = [k for k in H.columns if k.startswith("train") and k.endswith("epoch")]
+    train_step_keys = [k for k in H.columns if k.startswith("train") and k.endswith("step")]
+    assert len(valid_keys) > 0, "Make sure to prefix your validation metrics with 'valid'"
+    H_valid = H[~H[valid_keys[0]].isna()]
+    H_train_epoch = H[~H[train_epoch_keys[0]].isna()]
+    H_train_step = H[~H[train_step_keys[0]].isna()]
+    assert len(H_valid) + len(H_train_epoch) + len(H_train_step) == len(H), "Added or removed logs"
+    H_valid['epoch'].values[:] = H_train_epoch['epoch'].values[0:len(H_valid['epoch'])] # Populate missing value
+    del H_valid['step']
+    H_train_epoch['epoch_at_step'] = H_train_epoch['step']
+    del H_train_epoch['step']
+    H_valid = H_valid.dropna(axis='columns')
+    H_train_epoch = H_train_epoch.dropna(axis='columns')
+    H_train_step = H_train_step.dropna(axis='columns')
+    H_processed = H_train_step.to_dict('list')
+    H_processed.update(H_valid.to_dict('list'))
+    H_processed.update(H_train_epoch.to_dict('list'))
 
     # Add evaluation results
     eval_results = {}
@@ -80,13 +110,13 @@ def load_H(e):
         for k in ev:
             eval_results[os.path.basename(f_name) + "_" + k] = [ev[k]]
     for k in eval_results:
-        H['eval_' + k] = eval_results[k]
+        H_processed['eval_' + k] = eval_results[k]
 
-    return H
+    return H_processed
 
 
 def load_HC(e):
-    pass
+    return load_H(e), load_C(e)
 
 
 def acc(y_pred, y_true):
@@ -263,5 +293,6 @@ def summary(model, file=sys.stderr):
 
 
 if __name__ == "__main__":
-    H = load_H("save_to_folder2")
+    H,C = load_HC("save_to_folder8")
     print(H)
+    print(C)

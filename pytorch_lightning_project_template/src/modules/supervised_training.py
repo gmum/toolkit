@@ -32,9 +32,10 @@ class SupervisedLearning(LightningModule):
     Module defining a supervised learning system.
     """
 
-    def __init__(self, model, lr=0.1):
+    def __init__(self, model, meta_data, lr=0.1):
         super().__init__()
         self.model = model
+        self.meta_data = meta_data
         self.lr = lr
 
     def forward(self, x):
@@ -45,8 +46,10 @@ class SupervisedLearning(LightningModule):
         output = self(images)
         loss_val = F.cross_entropy(output, target)
         acc1, acc5 = self.__accuracy(output, target, topk=(1, 5))
-        self.log('train_loss', loss_val, on_epoch=True)
-        self.log('train_acc', acc1, on_epoch=True)
+        self.log('train_loss', loss_val, on_epoch=True, on_step=True)
+        self.log('train_acc', acc1, on_epoch=True, on_step=True)
+        self.log('train_loss_step', loss_val, on_epoch=False, on_step=True)
+        self.log('train_acc_step', acc1, on_epoch=False, on_step=True)
         return loss_val
 
     def validation_step(self, batch, batch_idx):
