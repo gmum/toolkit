@@ -10,11 +10,11 @@ LRSchedule.schedule=[[2, 1.0],[10, 0.1]]
 LRSchedule.base_lr=0.1
 
 # Training loop
-training_loop.n_epochs=10
+training_loop.n_epochs=5
 training_loop.resume=False
 
 # Dataset
 get_dataset.dataset='cifar'
-cifar.seed=777
+get_dataset.seed=777
 cifar.variant='10'
 cifar.use_valid = True

@@ -10,7 +10,8 @@ LRSchedule.schedule=[[2, 1.0],[10, 0.1]]
 LRSchedule.base_lr=0.01
 
 # Training loop
-training_loop.n_epochs=1
+training_loop.n_epochs=5
+training_loop.limit_train_batches=10
 
 # Dataset
 get_dataset.dataset='cifar'
