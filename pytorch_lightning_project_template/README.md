@@ -47,7 +47,7 @@ Take the following steps:
 
 4. Run ``tensorboard --logdir=save_to_folder`` to visualize the learning curves.
 
-Configuration is done using gin. This allows for a flexible configuration of training. For instance, to continue training for more epochs you can run: ``bin/train.py save_to_folder configs/cnn.gin -b="training_loop.n_epochs=5#training_loop.reload=True"``.
+Configuration is done using gin. This allows for a flexible configuration of training. For instance, to continue training for more epochs you can run: ``bin/train_supervised.py save_to_folder configs/cnn.gin -b="training_loop.n_epochs=5#training_loop.resume=True"``.
 
 Note: training won't reach sensible accuracies. This is on purpose so that the demonstration works on small machines. For a bit more realistic training configuration see `configs/cnn_full.gin`.
 
