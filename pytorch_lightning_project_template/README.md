@@ -43,7 +43,7 @@ Take the following steps:
 
 2. Activate the environment: ``source e.sh``.
 
-3. Train on few batches a CNN on Cifar10: ``bin/train.py save_to_folder configs/cnn.gin``.
+3. Train on few batches a CNN on Cifar10: ``bin/train_supervised.py save_to_folder configs/cnn.gin``.
 
 4. Run ``tensorboard --logdir=save_to_folder`` to visualize the learning curves.
 
