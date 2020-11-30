@@ -11,11 +11,10 @@ LRSchedule.base_lr=0.1
 
 # Training loop
 training_loop.n_epochs=10
-training_loop.reload=False
+training_loop.resume=False
 
 # Dataset
 get_dataset.dataset='cifar'
-get_dataset.n_examples=-1
-get_dataset.data_seed=777
-cifar.which=10
-cifar.preprocessing='center'
+cifar.seed=777
+cifar.variant='10'
+cifar.use_valid = True
