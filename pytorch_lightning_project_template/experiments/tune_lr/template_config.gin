@@ -11,6 +11,7 @@ LRSchedule.base_lr=$learning_rate$
 
 # Training loop
 training_loop.n_epochs=1
+training_loop.limit_train_batches=50
 
 # Dataset
 get_dataset.dataset='cifar'
