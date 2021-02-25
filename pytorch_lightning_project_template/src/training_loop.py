@@ -30,12 +30,17 @@ logger = logging.getLogger(__name__)
 
 @gin.configurable
 def training_loop(train, valid, save_path, pl_module, callbacks,
-        n_epochs, checkpoint_callback, use_neptune=False, resume=True, limit_train_batches=None, neptune_tags="", neptune_name=""):
+        n_epochs, checkpoint_callback, use_cpu=False, use_neptune=False, resume=True, limit_train_batches=None, neptune_tags="", neptune_name=""):
     """
     Largely model/application agnostic training code.
     """
     # Train with proper resuming
     # Copy gin configs used, for reference, to the save folder
+
+    if use_cpu:
+        gpus = 0
+    else:
+        gpus = 1
 
     if not limit_train_batches:
         limit_train_batches = len(train)
@@ -69,6 +74,7 @@ def training_loop(train, valid, save_path, pl_module, callbacks,
         logger=loggers,
         callbacks=callbacks,
         log_every_n_steps=1,
+        gpus=gpus,
         checkpoint_callback=checkpoint_callback,
         resume_from_checkpoint=os.path.join(save_path, 'last.ckpt')
         if resume and os.path.exists(os.path.join(save_path, 'last.ckpt')) else None)

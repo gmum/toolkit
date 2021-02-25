@@ -12,6 +12,7 @@ LRSchedule.base_lr=0.1
 # Training loop
 training_loop.n_epochs=5
 training_loop.resume=False
+# training_loop.use_cpu=True
 
 # Dataset
 get_dataset.dataset='cifar'
